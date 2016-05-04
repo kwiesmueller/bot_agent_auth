@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/bborbe/bot_agent/request_consumer"
-	"github.com/bborbe/bot_agent_auth/auth"
 	"github.com/bborbe/bot_agent_auth/creator"
 	"github.com/bborbe/bot_agent_auth/lister"
+	"github.com/bborbe/bot_agent_auth/message_handler"
 	flag "github.com/bborbe/flagenv"
 	http_client_builder "github.com/bborbe/http/client_builder"
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
@@ -83,6 +83,6 @@ func createRequestConsumer(nsqdAddress string, nsqLookupdAddress string, botname
 	c := creator.New(authAddress, httpClient.Do, httpRequestBuilderProvider)
 	l := lister.New(authAddress, httpClient.Do, httpRequestBuilderProvider)
 
-	messageHandler := auth.New(l.List, c.Create)
+	messageHandler := message_handler.New(l.List, c.Create)
 	return request_consumer.New(nsqdAddress, nsqLookupdAddress, botname, messageHandler), nil
 }
