@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/bborbe/auth/api"
 	"github.com/bborbe/bot_agent/message"
 	"github.com/bborbe/log"
 )
@@ -13,18 +14,18 @@ var logger = log.DefaultLogger
 
 const PREFIX = "/auth"
 
-type List func(authToken string) ([]string, error)
-type Create func(authToken string, authName string) error
+type CreateApplication func(applicationName string) (*api.ApplicationPassword, error)
+type DeleteApplication func(applicationName string) error
 
 type authAgent struct {
-	listEntries List
-	createEntry Create
+	createApplication CreateApplication
+	deleteApplication DeleteApplication
 }
 
-func New(list List, create Create) *authAgent {
+func New(createApplication CreateApplication, deleteApplication DeleteApplication) *authAgent {
 	s := new(authAgent)
-	s.listEntries = list
-	s.createEntry = create
+	s.createApplication = createApplication
+	s.deleteApplication = deleteApplication
 	return s
 }
 
@@ -34,11 +35,22 @@ func (h *authAgent) HandleMessage(request *message.Request) ([]*message.Response
 		return h.skip()
 	}
 	parts := strings.Split(request.Message, " ")
-	if len(parts) == 2 && parts[1] == "list" {
-		return h.list(request.AuthToken)
+	if len(parts) == 4 && parts[1] == "create" && parts[2] == "application" {
+		applicationName := parts[3]
+		logger.Debugf("create applcation %s", applicationName)
+		applicationPassword, err := h.createApplication(applicationName)
+		if err != nil {
+			return h.sendMessage(fmt.Sprintf("create application %s failed", applicationName))
+		}
+		return h.sendMessage(fmt.Sprintf("application %s created with password %s", applicationName, *applicationPassword))
 	}
-	if len(parts) == 3 && parts[1] == "create" {
-		return h.create(request.AuthToken, parts[2])
+	if len(parts) == 4 && parts[1] == "delete" && parts[1] == "application" {
+		applicationName := parts[3]
+		logger.Debugf("delete applcation %s", applicationName)
+		if err := h.deleteApplication(applicationName); err != nil {
+			return h.sendMessage(fmt.Sprintf("delete application %s failed", applicationName))
+		}
+		return h.sendMessage(fmt.Sprintf("application %s deleted", applicationName))
 	}
 	return h.help()
 }
@@ -52,30 +64,9 @@ func (h *authAgent) help() ([]*message.Response, error) {
 	logger.Debugf("send help message")
 	b := bytes.NewBufferString("")
 	fmt.Fprintf(b, "%s help\n", PREFIX)
-	fmt.Fprintf(b, "%s list\n", PREFIX)
-	fmt.Fprintf(b, "%s create name\n", PREFIX)
+	fmt.Fprintf(b, "%s create application [NAME]\n", PREFIX)
+	fmt.Fprintf(b, "%s delete application [NAME]\n", PREFIX)
 	return h.sendMessage(b.String())
-}
-
-func (h *authAgent) list(authToken string) ([]*message.Response, error) {
-	logger.Debugf("list")
-	b := bytes.NewBufferString("")
-	list, err := h.listEntries(authToken)
-	if err != nil {
-		return h.sendMessage("list failed")
-	}
-	for _, name := range list {
-		fmt.Fprintf(b, "%s\n", name)
-	}
-	return h.sendMessage(b.String())
-}
-
-func (h *authAgent) create(authToken string, name string) ([]*message.Response, error) {
-	logger.Debugf("create %s", name)
-	if err := h.createEntry(authToken, name); err != nil {
-		return h.sendMessage(fmt.Sprintf("create %s failed", name))
-	}
-	return h.sendMessage(fmt.Sprintf("%s created", name))
 }
 
 func (h *authAgent) sendMessage(msg string) ([]*message.Response, error) {

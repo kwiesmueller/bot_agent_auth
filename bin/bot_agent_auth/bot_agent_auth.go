@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/bborbe/bot_agent/request_consumer"
-	"github.com/bborbe/bot_agent_auth/creator"
-	"github.com/bborbe/bot_agent_auth/lister"
+	"github.com/bborbe/bot_agent_auth/application_creator"
+	"github.com/bborbe/bot_agent_auth/application_deletor"
 	"github.com/bborbe/bot_agent_auth/message_handler"
 	flag "github.com/bborbe/flagenv"
 	http_client_builder "github.com/bborbe/http/client_builder"
@@ -78,11 +78,14 @@ func createRequestConsumer(nsqdAddress string, nsqLookupdAddress string, botname
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_APPLICATION_PASSWORD)
 	}
 
+	applicationName := "auth"
+	applicationPassword := "sec"
+
 	httpRequestBuilderProvider := http_requestbuilder.NewHttpRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
-	c := creator.New(authAddress, httpClient.Do, httpRequestBuilderProvider)
-	l := lister.New(authAddress, httpClient.Do, httpRequestBuilderProvider)
+	applicationCreator := application_creator.New(applicationName, applicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	applicationDeletor := application_deletor.New(applicationName, applicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
 
-	messageHandler := message_handler.New(l.List, c.Create)
+	messageHandler := message_handler.New(applicationCreator.Create, applicationDeletor.Delete)
 	return request_consumer.New(nsqdAddress, nsqLookupdAddress, botname, messageHandler), nil
 }
