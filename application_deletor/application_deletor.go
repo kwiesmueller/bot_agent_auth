@@ -48,12 +48,13 @@ func (s *applicationDeletor) Delete(applicationName string) error {
 	if err != nil {
 		return err
 	}
+	logger.Debugf("send delete application request to auth api")
 	resp, err := s.executeRequest(req)
 	if err != nil {
 		return err
 	}
 	if resp.StatusCode/100 != 2 {
-		return fmt.Errorf("request failed with status: %d", resp.StatusCode)
+		return fmt.Errorf("delete application request failed with status: %d", resp.StatusCode)
 	}
 	return nil
 }

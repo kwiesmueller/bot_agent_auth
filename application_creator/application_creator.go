@@ -53,7 +53,7 @@ func (s *applicationCreator) Create(applicationName string) (*api.ApplicationPas
 	if err != nil {
 		return nil, err
 	}
-	logger.Debugf("send request to auth api: %s", string(content))
+	logger.Debugf("send create application request to auth api: %s", string(content))
 	requestbuilder.SetBody(bytes.NewBuffer(content))
 	req, err := requestbuilder.Build()
 	if err != nil {
