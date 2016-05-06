@@ -39,7 +39,7 @@ func (h *authAgent) HandleMessage(request *message.Request) ([]*message.Response
 		applicationName := parts[3]
 		applicationPassword, err := h.createApplication(applicationName)
 		if err != nil {
-			logger.Debugf("application creation failed => send failure message")
+			logger.Debugf("application creation failed => send failure message: %v", err)
 			return h.sendMessage(fmt.Sprintf("create application %s failed", applicationName))
 		}
 		logger.Debugf("application created => send success message")
