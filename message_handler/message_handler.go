@@ -37,11 +37,12 @@ func (h *authAgent) HandleMessage(request *message.Request) ([]*message.Response
 	parts := strings.Split(request.Message, " ")
 	if len(parts) == 4 && parts[1] == "create" && parts[2] == "application" {
 		applicationName := parts[3]
-		logger.Debugf("create applcation %s", applicationName)
 		applicationPassword, err := h.createApplication(applicationName)
 		if err != nil {
+			logger.Debugf("application creation failed => send failure message")
 			return h.sendMessage(fmt.Sprintf("create application %s failed", applicationName))
 		}
+		logger.Debugf("application created => send success message")
 		return h.sendMessage(fmt.Sprintf("application %s created with password %s", applicationName, *applicationPassword))
 	}
 	if len(parts) == 4 && parts[1] == "delete" && parts[1] == "application" {

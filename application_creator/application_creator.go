@@ -53,7 +53,7 @@ func (s *applicationCreator) Create(applicationName string) (*api.ApplicationPas
 	if err != nil {
 		return nil, err
 	}
-	logger.Debugf("request message: %s", string(content))
+	logger.Debugf("send request to auth api: %s", string(content))
 	requestbuilder.SetBody(bytes.NewBuffer(content))
 	req, err := requestbuilder.Build()
 	if err != nil {
@@ -64,7 +64,7 @@ func (s *applicationCreator) Create(applicationName string) (*api.ApplicationPas
 		return nil, err
 	}
 	if resp.StatusCode/100 != 2 {
-		return nil, fmt.Errorf("request failed with status: %d", resp.StatusCode)
+		return nil, fmt.Errorf("request to auth api failed with status: %d", resp.StatusCode)
 	}
 	var response api.CreateApplicationResponse
 	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
