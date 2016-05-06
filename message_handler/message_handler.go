@@ -61,7 +61,7 @@ func (h *authAgent) HandleMessage(request *message.Request) ([]*message.Response
 		exists, err := h.existsApplication(applicationName)
 		if err != nil {
 			logger.Debugf("application exists failed => send failure message: %v", err)
-			return h.sendMessage(fmt.Sprintf("create application %s failed", applicationName))
+			return h.sendMessage(fmt.Sprintf("exists application %s failed", applicationName))
 		}
 		logger.Debugf("application exists => send success message")
 		if *exists {
