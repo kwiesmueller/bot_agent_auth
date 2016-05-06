@@ -78,13 +78,10 @@ func createRequestConsumer(nsqdAddress string, nsqLookupdAddress string, botname
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_APPLICATION_PASSWORD)
 	}
 
-	applicationName := "auth"
-	applicationPassword := "sec"
-
 	httpRequestBuilderProvider := http_requestbuilder.NewHttpRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
-	applicationCreator := application_creator.New(applicationName, applicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
-	applicationDeletor := application_deletor.New(applicationName, applicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	applicationCreator := application_creator.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	applicationDeletor := application_deletor.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
 
 	messageHandler := message_handler.New(applicationCreator.Create, applicationDeletor.Delete)
 	return request_consumer.New(nsqdAddress, nsqLookupdAddress, botname, messageHandler), nil
