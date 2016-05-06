@@ -35,7 +35,7 @@ func (h *authAgent) HandleMessage(request *message.Request) ([]*message.Response
 		return h.skip()
 	}
 	parts := strings.Split(request.Message, " ")
-	if len(parts) == 4 && parts[1] == "create" && parts[2] == "application" {
+	if len(parts) == 4 && parts[1] == "application" && parts[2] == "create" {
 		applicationName := parts[3]
 		applicationPassword, err := h.createApplication(applicationName)
 		if err != nil {
@@ -45,7 +45,7 @@ func (h *authAgent) HandleMessage(request *message.Request) ([]*message.Response
 		logger.Debugf("application created => send success message")
 		return h.sendMessage(fmt.Sprintf("application %s created with password %s", applicationName, *applicationPassword))
 	}
-	if len(parts) == 4 && parts[1] == "delete" && parts[1] == "application" {
+	if len(parts) == 4 && parts[1] == "application" && parts[2] == "delete" {
 		applicationName := parts[3]
 		logger.Debugf("delete applcation %s", applicationName)
 		if err := h.deleteApplication(applicationName); err != nil {
@@ -65,8 +65,8 @@ func (h *authAgent) help() ([]*message.Response, error) {
 	logger.Debugf("send help message")
 	b := bytes.NewBufferString("")
 	fmt.Fprintf(b, "%s help\n", PREFIX)
-	fmt.Fprintf(b, "%s create application [NAME]\n", PREFIX)
-	fmt.Fprintf(b, "%s delete application [NAME]\n", PREFIX)
+	fmt.Fprintf(b, "%s application create [NAME]\n", PREFIX)
+	fmt.Fprintf(b, "%s application delete [NAME]\n", PREFIX)
 	return h.sendMessage(b.String())
 }
 
