@@ -12,27 +12,28 @@ import (
 	http_client_builder "github.com/bborbe/http/client_builder"
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
 	"github.com/bborbe/log"
+	"github.com/bborbe/bot_agent_auth/application_exists"
 )
 
 const (
-	PARAMETER_LOGLEVEL                  = "loglevel"
-	PARAMETER_NSQ_LOOKUPD               = "nsq-lookupd-address"
-	PARAMETER_NSQD                      = "nsqd-address"
-	DEFAULT_BOT_NAME                    = "auth"
-	PARAMETER_BOT_NAME                  = "bot-name"
-	PARAMETER_AUTH_ADDRESS              = "auth-address"
-	PARAMETER_AUTH_APPLICATION_NAME     = "auth-application-name"
+	PARAMETER_LOGLEVEL = "loglevel"
+	PARAMETER_NSQ_LOOKUPD = "nsq-lookupd-address"
+	PARAMETER_NSQD = "nsqd-address"
+	DEFAULT_BOT_NAME = "auth"
+	PARAMETER_BOT_NAME = "bot-name"
+	PARAMETER_AUTH_ADDRESS = "auth-address"
+	PARAMETER_AUTH_APPLICATION_NAME = "auth-application-name"
 	PARAMETER_AUTH_APPLICATION_PASSWORD = "auth-application-password"
 )
 
 var (
-	logger                     = log.DefaultLogger
-	logLevelPtr                = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, log.FLAG_USAGE)
-	nsqLookupdAddressPtr       = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
-	nsqdAddressPtr             = flag.String(PARAMETER_NSQD, "", "nsqd address")
-	botNamePtr                 = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
-	authAddressPtr             = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
-	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
+	logger = log.DefaultLogger
+	logLevelPtr = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, log.FLAG_USAGE)
+	nsqLookupdAddressPtr = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
+	nsqdAddressPtr = flag.String(PARAMETER_NSQD, "", "nsqd address")
+	botNamePtr = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
+	authAddressPtr = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
+	authApplicationNamePtr = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
 )
 
@@ -82,7 +83,8 @@ func createRequestConsumer(nsqdAddress string, nsqLookupdAddress string, botname
 	httpClient := http_client_builder.New().WithoutProxy().Build()
 	applicationCreator := application_creator.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
 	applicationDeletor := application_deletor.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	applicationExists := application_exists.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
 
-	messageHandler := message_handler.New(applicationCreator.Create, applicationDeletor.Delete)
+	messageHandler := message_handler.New(applicationCreator.Create, applicationDeletor.Delete, applicationExists.Exists)
 	return request_consumer.New(nsqdAddress, nsqLookupdAddress, botname, messageHandler), nil
 }

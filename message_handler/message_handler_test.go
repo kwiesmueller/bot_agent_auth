@@ -10,7 +10,7 @@ import (
 )
 
 func TestImplementsAgent(t *testing.T) {
-	c := New(nil, nil)
+	c := New(nil, nil, nil)
 	var i *message_handler.MessageHandler
 	if err := AssertThat(c, Implements(i)); err != nil {
 		t.Fatal(err)
@@ -23,7 +23,7 @@ func TestHandleMessageCreateApplication(t *testing.T) {
 		counter++
 		pw := api.ApplicationPassword("bar")
 		return &pw, nil
-	}, nil)
+	}, nil, nil)
 	c.HandleMessage(&message.Request{
 		Message: "/auth application create foo",
 	})
@@ -37,9 +37,24 @@ func TestHandleMessageDeleteApplication(t *testing.T) {
 	c := New(nil, func(applicationName string) error {
 		counter++
 		return nil
-	})
+	}, nil)
 	c.HandleMessage(&message.Request{
 		Message: "/auth application delete foo",
+	})
+	if err := AssertThat(counter, Is(1)); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestHandleMessageExistsApplication(t *testing.T) {
+	counter := 0
+	c := New(nil, nil, func(applicationName string) (*bool, error) {
+		counter++
+		result := true
+		return &result, nil
+	})
+	c.HandleMessage(&message.Request{
+		Message: "/auth application exists foo",
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)

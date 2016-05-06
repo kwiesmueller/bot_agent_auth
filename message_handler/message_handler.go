@@ -16,16 +16,19 @@ const PREFIX = "/auth"
 
 type CreateApplication func(applicationName string) (*api.ApplicationPassword, error)
 type DeleteApplication func(applicationName string) error
+type ExistsApplication func(applicationName string) (*bool, error)
 
 type authAgent struct {
 	createApplication CreateApplication
 	deleteApplication DeleteApplication
+	existsApplication ExistsApplication
 }
 
-func New(createApplication CreateApplication, deleteApplication DeleteApplication) *authAgent {
+func New(createApplication CreateApplication, deleteApplication DeleteApplication, existsApplication ExistsApplication) *authAgent {
 	s := new(authAgent)
 	s.createApplication = createApplication
 	s.deleteApplication = deleteApplication
+	s.existsApplication = existsApplication
 	return s
 }
 
@@ -52,6 +55,20 @@ func (h *authAgent) HandleMessage(request *message.Request) ([]*message.Response
 			return h.sendMessage(fmt.Sprintf("delete application %s failed", applicationName))
 		}
 		return h.sendMessage(fmt.Sprintf("application %s deleted", applicationName))
+	}
+	if len(parts) == 4 && parts[1] == "application" && parts[2] == "exists" {
+		applicationName := parts[3]
+		exists, err := h.existsApplication(applicationName)
+		if err != nil {
+			logger.Debugf("application exists failed => send failure message: %v", err)
+			return h.sendMessage(fmt.Sprintf("create application %s failed", applicationName))
+		}
+		logger.Debugf("application exists => send success message")
+		if *exists {
+			return h.sendMessage(fmt.Sprintf("application %s exists", applicationName))
+		} else {
+			return h.sendMessage(fmt.Sprintf("application %s not exists", applicationName))
+		}
 	}
 	return h.help()
 }
