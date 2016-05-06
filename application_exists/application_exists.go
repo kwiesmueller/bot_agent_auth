@@ -54,6 +54,9 @@ func (s *applicationCreator) Exists(applicationName string) (*bool, error) {
 	if err != nil {
 		return nil, err
 	}
+	if resp.StatusCode == 404 {
+		return &false, nil
+	}
 	if resp.StatusCode / 100 != 2 {
 		return nil, fmt.Errorf("request to auth api failed with status: %d", resp.StatusCode)
 	}
