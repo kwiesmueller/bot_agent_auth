@@ -39,7 +39,7 @@ func New(applicationName string, applicationPassword string, address string, exe
 func (s *applicationCreator) Exists(applicationName string) (*bool, error) {
 	logger.Debugf("create application %s", applicationName)
 	start := time.Now()
-	defer logger.Debugf("create completed in %dms", time.Now().Sub(start) / time.Millisecond)
+	defer logger.Debugf("create completed in %dms", time.Now().Sub(start)/time.Millisecond)
 	target := fmt.Sprintf("http://%s/application/%s", s.address, applicationName)
 	logger.Debugf("send message to %s", target)
 	requestbuilder := s.httpRequestBuilderProvider.NewHttpRequestBuilder(target)
@@ -58,7 +58,7 @@ func (s *applicationCreator) Exists(applicationName string) (*bool, error) {
 		exists := false
 		return &exists, nil
 	}
-	if resp.StatusCode / 100 != 2 {
+	if resp.StatusCode/100 != 2 {
 		return nil, fmt.Errorf("request to auth api failed with status: %d", resp.StatusCode)
 	}
 	var response api.GetApplicationResponse
