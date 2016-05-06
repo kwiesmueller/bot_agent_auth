@@ -84,6 +84,7 @@ func (h *authAgent) help() ([]*message.Response, error) {
 	fmt.Fprintf(b, "%s help\n", PREFIX)
 	fmt.Fprintf(b, "%s application create [NAME]\n", PREFIX)
 	fmt.Fprintf(b, "%s application delete [NAME]\n", PREFIX)
+	fmt.Fprintf(b, "%s application exists [NAME]\n", PREFIX)
 	return h.sendMessage(b.String())
 }
 
