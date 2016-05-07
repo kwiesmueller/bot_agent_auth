@@ -21,7 +21,7 @@ func TestImplementsHandler(t *testing.T) {
 func TestMatchTrue(t *testing.T) {
 	c := New("/auth", nil)
 	match := c.Match(&message.Request{
-		Message: "/auth register bborbe",
+		Message: "/auth token remove abc",
 	})
 	if err := AssertThat(match, Is(true)); err != nil {
 		t.Fatal(err)
@@ -31,7 +31,7 @@ func TestMatchTrue(t *testing.T) {
 func TestMatchFalse(t *testing.T) {
 	c := New("/auth", nil)
 	match := c.Match(&message.Request{
-		Message: "/auth register",
+		Message: "/auth token remove",
 	})
 	if err := AssertThat(match, Is(false)); err != nil {
 		t.Fatal(err)
@@ -40,13 +40,13 @@ func TestMatchFalse(t *testing.T) {
 
 func TestHandleMessageSuccess(t *testing.T) {
 	authToken := "abc"
-	userName := "testuser"
+	token := "edf"
 	counter := 0
-	c := New("/auth", func(_authToken string, _userName string) error {
+	c := New("/auth", func(_authToken string, _token string) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}
-		if err := AssertThat(_userName, Is(userName)); err != nil {
+		if err := AssertThat(_token, Is(token)); err != nil {
 			t.Fatal(err)
 		}
 		counter++
@@ -56,7 +56,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&message.Request{
-		Message:   fmt.Sprintf("/auth register %s", userName),
+		Message:   fmt.Sprintf("/auth token remove %s", token),
 		AuthToken: authToken,
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
@@ -75,13 +75,13 @@ func TestHandleMessageSuccess(t *testing.T) {
 
 func TestHandleMessageFailure(t *testing.T) {
 	authToken := "abc"
-	userName := "testuser"
+	token := "edf"
 	counter := 0
-	c := New("/auth", func(_authToken string, _userName string) error {
+	c := New("/auth", func(_authToken string, _token string) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}
-		if err := AssertThat(_userName, Is(userName)); err != nil {
+		if err := AssertThat(_token, Is(token)); err != nil {
 			t.Fatal(err)
 		}
 		counter++
@@ -91,7 +91,7 @@ func TestHandleMessageFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&message.Request{
-		Message:   fmt.Sprintf("/auth register %s", userName),
+		Message:   fmt.Sprintf("/auth token remove %s", token),
 		AuthToken: authToken,
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {

@@ -12,6 +12,10 @@ import (
 	application_exists_action "github.com/bborbe/bot_agent_auth/application/exists/action"
 	application_exists_handler "github.com/bborbe/bot_agent_auth/application/exists/handler"
 	"github.com/bborbe/bot_agent_auth/message_handler"
+	token_add_action "github.com/bborbe/bot_agent_auth/token/add/action"
+	token_add_handler "github.com/bborbe/bot_agent_auth/token/add/handler"
+	token_remove_action "github.com/bborbe/bot_agent_auth/token/remove/action"
+	token_remove_handler "github.com/bborbe/bot_agent_auth/token/remove/handler"
 	user_register_action "github.com/bborbe/bot_agent_auth/user/register/action"
 	user_register_handler "github.com/bborbe/bot_agent_auth/user/register/handler"
 	user_whoami_action "github.com/bborbe/bot_agent_auth/user/whoami/action"
@@ -24,7 +28,7 @@ import (
 
 const (
 	PARAMETER_LOGLEVEL                  = "loglevel"
-	PARAMETER_NSQ_LOOKUPD               = "nsq-lookupd-address"
+	PARAMETER_NSQ_LOOKUPD               = "nsq-lookupd-removeress"
 	PARAMETER_NSQD                      = "nsqd-address"
 	DEFAULT_BOT_NAME                    = "auth"
 	PARAMETER_BOT_NAME                  = "bot-name"
@@ -105,6 +109,12 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 	userRegisterAction := user_register_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
 	userRegisterHandler := user_register_handler.New(prefix, userRegisterAction.Register)
 
+	tokenAddAction := token_add_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	tokenAddHandler := token_add_handler.New(prefix, tokenAddAction.Add)
+
+	tokenRemoveAction := token_remove_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	tokenRemoveHandler := token_remove_handler.New(prefix, tokenRemoveAction.Remove)
+
 	messageHandler := message_handler.New(
 		prefix,
 		applicationCreatorHandler,
@@ -112,6 +122,8 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 		applicationExistsHandler,
 		userWhoamiHandler,
 		userRegisterHandler,
+		tokenAddHandler,
+		tokenRemoveHandler,
 	)
 	return request_consumer.New(nsqdAddress, nsqLookupdAddress, botname, messageHandler), nil
 }
