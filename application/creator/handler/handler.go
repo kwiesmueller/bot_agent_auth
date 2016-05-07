@@ -6,6 +6,7 @@ import (
 
 	"github.com/bborbe/auth/api"
 	"github.com/bborbe/bot_agent/message"
+	"github.com/bborbe/bot_agent_auth/matcher"
 	"github.com/bborbe/bot_agent_auth/response"
 	"github.com/bborbe/log"
 )
@@ -15,24 +16,24 @@ var logger = log.DefaultLogger
 type CreateApplication func(applicationName string) (*api.ApplicationPassword, error)
 
 type handler struct {
-	prefix            string
+	parts             []string
 	createApplication CreateApplication
 }
 
 func New(prefix string, createApplication CreateApplication) *handler {
 	h := new(handler)
-	h.prefix = prefix
+	h.parts = []string{prefix, "application", "create", "[NAME]"}
 	h.createApplication = createApplication
 	return h
 }
 
 func (h *handler) Match(request *message.Request) bool {
 	parts := strings.Split(request.Message, " ")
-	return len(parts) == 4 && parts[1] == "application" && parts[2] == "create"
+	return matcher.Match(h.parts, parts)
 }
 
 func (h *handler) Help() string {
-	return fmt.Sprintf("%s application create [NAME]\n", h.prefix)
+	return strings.Join(h.parts, " ")
 }
 
 func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, error) {
