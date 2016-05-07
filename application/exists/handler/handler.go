@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
-	"github.com/bborbe/log"
-	"github.com/bborbe/bot_agent/message"
 	"strings"
+
+	"github.com/bborbe/bot_agent/message"
 	"github.com/bborbe/bot_agent_auth/response"
+	"github.com/bborbe/log"
 )
 
 var logger = log.DefaultLogger

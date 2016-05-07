@@ -2,11 +2,12 @@ package handler
 
 import (
 	"fmt"
-	"github.com/bborbe/log"
-	"github.com/bborbe/bot_agent/message"
 	"strings"
+
 	"github.com/bborbe/auth/api"
+	"github.com/bborbe/bot_agent/message"
 	"github.com/bborbe/bot_agent_auth/response"
+	"github.com/bborbe/log"
 )
 
 var logger = log.DefaultLogger
@@ -40,8 +41,8 @@ func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, 
 	applicationPassword, err := h.createApplication(applicationName)
 	if err != nil {
 		logger.Debugf("application creation failed => send failure message: %v", err)
-		return response.CreateReponseMessage(fmt.Sprintf("create application %s failed", applicationName)),nil
+		return response.CreateReponseMessage(fmt.Sprintf("create application %s failed", applicationName)), nil
 	}
 	logger.Debugf("application created => send success message")
-	return response.CreateReponseMessage(fmt.Sprintf("application %s created with password %s", applicationName, *applicationPassword)),nil
+	return response.CreateReponseMessage(fmt.Sprintf("application %s created with password %s", applicationName, *applicationPassword)), nil
 }

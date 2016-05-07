@@ -6,10 +6,10 @@ import (
 
 	"github.com/bborbe/bot_agent/request_consumer"
 	application_creator_action "github.com/bborbe/bot_agent_auth/application/creator/action"
-	application_deletor_action "github.com/bborbe/bot_agent_auth/application/deletor/action"
-	application_exists_action "github.com/bborbe/bot_agent_auth/application/exists/action"
 	application_creator_handler "github.com/bborbe/bot_agent_auth/application/creator/handler"
+	application_deletor_action "github.com/bborbe/bot_agent_auth/application/deletor/action"
 	application_deletor_handler "github.com/bborbe/bot_agent_auth/application/deletor/handler"
+	application_exists_action "github.com/bborbe/bot_agent_auth/application/exists/action"
 	application_exists_handler "github.com/bborbe/bot_agent_auth/application/exists/handler"
 	"github.com/bborbe/bot_agent_auth/message_handler"
 	flag "github.com/bborbe/flagenv"
@@ -19,25 +19,25 @@ import (
 )
 
 const (
-	PARAMETER_LOGLEVEL = "loglevel"
-	PARAMETER_NSQ_LOOKUPD = "nsq-lookupd-address"
-	PARAMETER_NSQD = "nsqd-address"
-	DEFAULT_BOT_NAME = "auth"
-	PARAMETER_BOT_NAME = "bot-name"
-	PARAMETER_AUTH_ADDRESS = "auth-address"
-	PARAMETER_AUTH_APPLICATION_NAME = "auth-application-name"
+	PARAMETER_LOGLEVEL                  = "loglevel"
+	PARAMETER_NSQ_LOOKUPD               = "nsq-lookupd-address"
+	PARAMETER_NSQD                      = "nsqd-address"
+	DEFAULT_BOT_NAME                    = "auth"
+	PARAMETER_BOT_NAME                  = "bot-name"
+	PARAMETER_AUTH_ADDRESS              = "auth-address"
+	PARAMETER_AUTH_APPLICATION_NAME     = "auth-application-name"
 	PARAMETER_AUTH_APPLICATION_PASSWORD = "auth-application-password"
-	PREFIX = "/auth"
+	PREFIX                              = "/auth"
 )
 
 var (
-	logger = log.DefaultLogger
-	logLevelPtr = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, log.FLAG_USAGE)
-	nsqLookupdAddressPtr = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
-	nsqdAddressPtr = flag.String(PARAMETER_NSQD, "", "nsqd address")
-	botNamePtr = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
-	authAddressPtr = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
-	authApplicationNamePtr = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
+	logger                     = log.DefaultLogger
+	logLevelPtr                = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, log.FLAG_USAGE)
+	nsqLookupdAddressPtr       = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
+	nsqdAddressPtr             = flag.String(PARAMETER_NSQD, "", "nsqd address")
+	botNamePtr                 = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
+	authAddressPtr             = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
+	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
 )
 

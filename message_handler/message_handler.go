@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/bborbe/bot_agent/message"
-	"github.com/bborbe/log"
-	"github.com/bborbe/bot_agent_auth/response"
-	"github.com/bborbe/bot_agent_auth/handler"
 	"sort"
+
+	"github.com/bborbe/bot_agent/message"
+	"github.com/bborbe/bot_agent_auth/handler"
+	"github.com/bborbe/bot_agent_auth/response"
+	"github.com/bborbe/log"
 )
 
 var logger = log.DefaultLogger
@@ -18,7 +19,7 @@ type authAgent struct {
 	handlers []handler.Handler
 }
 
-func New(prefix string, handlers... handler.Handler) *authAgent {
+func New(prefix string, handlers ...handler.Handler) *authAgent {
 	s := new(authAgent)
 	s.prefix = prefix
 	s.handlers = handlers
@@ -51,7 +52,7 @@ func (a *authAgent) skip() ([]*message.Response, error) {
 	return nil, nil
 }
 
-func (a *authAgent) help() ([]*message.Response) {
+func (a *authAgent) help() []*message.Response {
 	logger.Debugf("send help message")
 	list := []string{fmt.Sprintf("%s help", a.prefix)}
 	for _, h := range a.handlers {
@@ -60,4 +61,3 @@ func (a *authAgent) help() ([]*message.Response) {
 	sort.Strings(list)
 	return response.CreateReponseMessage(strings.Join(list, "\n"))
 }
-
