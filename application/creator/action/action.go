@@ -1,6 +1,7 @@
-package application_exists
+package action
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -36,16 +37,24 @@ func New(applicationName string, applicationPassword string, address string, exe
 	return m
 }
 
-func (s *applicationCreator) Exists(applicationName string) (*bool, error) {
+func (s *applicationCreator) Create(applicationName string) (*api.ApplicationPassword, error) {
 	logger.Debugf("create application %s", applicationName)
 	start := time.Now()
 	defer logger.Debugf("create completed in %dms", time.Now().Sub(start)/time.Millisecond)
-	target := fmt.Sprintf("http://%s/application/%s", s.address, applicationName)
+	target := fmt.Sprintf("http://%s/application", s.address)
 	logger.Debugf("send message to %s", target)
 	requestbuilder := s.httpRequestBuilderProvider.NewHttpRequestBuilder(target)
-	requestbuilder.SetMethod("GET")
+	requestbuilder.SetMethod("POST")
+	requestbuilder.AddContentType("application/json")
 	requestbuilder.AddHeader("Authorization", bearer.CreateBearerHeader(s.applicationName, s.applicationPassword))
-	logger.Debugf("send get application request to auth api")
+	content, err := json.Marshal(&api.CreateApplicationRequest{
+		ApplicationName: api.ApplicationName(applicationName),
+	})
+	if err != nil {
+		return nil, err
+	}
+	logger.Debugf("send create application request to auth api: %s", string(content))
+	requestbuilder.SetBody(bytes.NewBuffer(content))
 	req, err := requestbuilder.Build()
 	if err != nil {
 		return nil, err
@@ -54,17 +63,12 @@ func (s *applicationCreator) Exists(applicationName string) (*bool, error) {
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode == 404 {
-		exists := false
-		return &exists, nil
-	}
 	if resp.StatusCode/100 != 2 {
 		return nil, fmt.Errorf("request to auth api failed with status: %d", resp.StatusCode)
 	}
-	var response api.GetApplicationResponse
+	var response api.CreateApplicationResponse
 	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return nil, err
 	}
-	exists := len(response.ApplicationPassword) > 0
-	return &exists, nil
+	return &response.ApplicationPassword, nil
 }

@@ -1,96 +1,63 @@
 package message_handler
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 
-	"github.com/bborbe/auth/api"
 	"github.com/bborbe/bot_agent/message"
 	"github.com/bborbe/log"
+	"github.com/bborbe/bot_agent_auth/response"
+	"github.com/bborbe/bot_agent_auth/handler"
+	"sort"
 )
 
 var logger = log.DefaultLogger
 
-const PREFIX = "/auth"
-
-type CreateApplication func(applicationName string) (*api.ApplicationPassword, error)
-type DeleteApplication func(applicationName string) error
-type ExistsApplication func(applicationName string) (*bool, error)
-
 type authAgent struct {
-	createApplication CreateApplication
-	deleteApplication DeleteApplication
-	existsApplication ExistsApplication
+	prefix   string
+	handlers []handler.Handler
 }
 
-func New(createApplication CreateApplication, deleteApplication DeleteApplication, existsApplication ExistsApplication) *authAgent {
+func New(prefix string, handlers... handler.Handler) *authAgent {
 	s := new(authAgent)
-	s.createApplication = createApplication
-	s.deleteApplication = deleteApplication
-	s.existsApplication = existsApplication
+	s.prefix = prefix
+	s.handlers = handlers
 	return s
 }
 
-func (h *authAgent) HandleMessage(request *message.Request) ([]*message.Response, error) {
+func (a *authAgent) HandleMessage(request *message.Request) ([]*message.Response, error) {
 	logger.Debugf("handle message for token: %v", request.Id)
-	if strings.Index(request.Message, PREFIX) != 0 {
-		return h.skip()
+	if strings.Index(request.Message, a.prefix) != 0 {
+		return a.skip()
 	}
-	parts := strings.Split(request.Message, " ")
-	if len(parts) == 4 && parts[1] == "application" && parts[2] == "create" {
-		applicationName := parts[3]
-		applicationPassword, err := h.createApplication(applicationName)
-		if err != nil {
-			logger.Debugf("application creation failed => send failure message: %v", err)
-			return h.sendMessage(fmt.Sprintf("create application %s failed", applicationName))
-		}
-		logger.Debugf("application created => send success message")
-		return h.sendMessage(fmt.Sprintf("application %s created with password %s", applicationName, *applicationPassword))
-	}
-	if len(parts) == 4 && parts[1] == "application" && parts[2] == "delete" {
-		applicationName := parts[3]
-		logger.Debugf("delete applcation %s", applicationName)
-		if err := h.deleteApplication(applicationName); err != nil {
-			return h.sendMessage(fmt.Sprintf("delete application %s failed", applicationName))
-		}
-		return h.sendMessage(fmt.Sprintf("application %s deleted", applicationName))
-	}
-	if len(parts) == 4 && parts[1] == "application" && parts[2] == "exists" {
-		applicationName := parts[3]
-		exists, err := h.existsApplication(applicationName)
-		if err != nil {
-			logger.Debugf("application exists failed => send failure message: %v", err)
-			return h.sendMessage(fmt.Sprintf("exists application %s failed", applicationName))
-		}
-		logger.Debugf("application exists => send success message")
-		if *exists {
-			return h.sendMessage(fmt.Sprintf("application %s exists", applicationName))
-		} else {
-			return h.sendMessage(fmt.Sprintf("application %s not exists", applicationName))
+	var responses []*message.Response
+	for _, h := range a.handlers {
+		if h.Match(request) {
+			resp, err := h.HandleMessage(request)
+			if err != nil {
+				return nil, err
+			}
+			responses = append(responses, resp...)
 		}
 	}
-	return h.help()
+	if len(responses) == 0 {
+		return a.help(), nil
+	}
+	return responses, nil
 }
 
-func (h *authAgent) skip() ([]*message.Response, error) {
-	logger.Debugf("message start not with %s => skip", PREFIX)
+func (a *authAgent) skip() ([]*message.Response, error) {
+	logger.Debugf("message start not with %s => skip", a.prefix)
 	return nil, nil
 }
 
-func (h *authAgent) help() ([]*message.Response, error) {
+func (a *authAgent) help() ([]*message.Response) {
 	logger.Debugf("send help message")
-	b := bytes.NewBufferString("")
-	fmt.Fprintf(b, "%s help\n", PREFIX)
-	fmt.Fprintf(b, "%s application create [NAME]\n", PREFIX)
-	fmt.Fprintf(b, "%s application delete [NAME]\n", PREFIX)
-	fmt.Fprintf(b, "%s application exists [NAME]\n", PREFIX)
-	return h.sendMessage(b.String())
+	list := []string{fmt.Sprintf("%s help", a.prefix)}
+	for _, h := range a.handlers {
+		list = append(list, h.Help())
+	}
+	sort.Strings(list)
+	return response.CreateReponseMessage(strings.Join(list, "\n"))
 }
 
-func (h *authAgent) sendMessage(msg string) ([]*message.Response, error) {
-	return []*message.Response{&message.Response{
-		Message: msg,
-		Replay:  false,
-	}}, nil
-}
