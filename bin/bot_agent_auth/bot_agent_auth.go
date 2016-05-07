@@ -11,11 +11,11 @@ import (
 	application_deletor_handler "github.com/bborbe/bot_agent_auth/application/deletor/handler"
 	application_exists_action "github.com/bborbe/bot_agent_auth/application/exists/action"
 	application_exists_handler "github.com/bborbe/bot_agent_auth/application/exists/handler"
-
+	"github.com/bborbe/bot_agent_auth/message_handler"
+	user_register_action "github.com/bborbe/bot_agent_auth/user/register/action"
+	user_register_handler "github.com/bborbe/bot_agent_auth/user/register/handler"
 	user_whoami_action "github.com/bborbe/bot_agent_auth/user/whoami/action"
 	user_whoami_handler "github.com/bborbe/bot_agent_auth/user/whoami/handler"
-
-	"github.com/bborbe/bot_agent_auth/message_handler"
 	flag "github.com/bborbe/flagenv"
 	http_client_builder "github.com/bborbe/http/client_builder"
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
@@ -102,12 +102,16 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 	userWhoamiAction := user_whoami_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
 	userWhoamiHandler := user_whoami_handler.New(prefix, userWhoamiAction.Whoami)
 
+	userRegisterAction := user_register_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	userRegisterHandler := user_register_handler.New(prefix, userRegisterAction.Register)
+
 	messageHandler := message_handler.New(
 		prefix,
 		applicationCreatorHandler,
 		applicationDeletorHandler,
 		applicationExistsHandler,
 		userWhoamiHandler,
+		userRegisterHandler,
 	)
 	return request_consumer.New(nsqdAddress, nsqLookupdAddress, botname, messageHandler), nil
 }
