@@ -11,6 +11,10 @@ import (
 	application_deletor_handler "github.com/bborbe/bot_agent_auth/application/deletor/handler"
 	application_exists_action "github.com/bborbe/bot_agent_auth/application/exists/action"
 	application_exists_handler "github.com/bborbe/bot_agent_auth/application/exists/handler"
+
+	user_whoami_action "github.com/bborbe/bot_agent_auth/user/whoami/action"
+	user_whoami_handler "github.com/bborbe/bot_agent_auth/user/whoami/handler"
+
 	"github.com/bborbe/bot_agent_auth/message_handler"
 	flag "github.com/bborbe/flagenv"
 	http_client_builder "github.com/bborbe/http/client_builder"
@@ -85,14 +89,25 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 
 	httpRequestBuilderProvider := http_requestbuilder.NewHttpRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
-	applicationCreatorAction := application_creator_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
-	applicationDeletorAction := application_deletor_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
-	applicationExistsAction := application_exists_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
 
+	applicationCreatorAction := application_creator_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
 	applicationCreatorHandler := application_creator_handler.New(prefix, applicationCreatorAction.Create)
+
+	applicationDeletorAction := application_deletor_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
 	applicationDeletorHandler := application_deletor_handler.New(prefix, applicationDeletorAction.Delete)
+
+	applicationExistsAction := application_exists_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
 	applicationExistsHandler := application_exists_handler.New(prefix, applicationExistsAction.Exists)
 
-	messageHandler := message_handler.New(prefix, applicationCreatorHandler, applicationDeletorHandler, applicationExistsHandler)
+	userWhoamiAction := user_whoami_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	userWhoamiHandler := user_whoami_handler.New(prefix, userWhoamiAction.Whoami)
+
+	messageHandler := message_handler.New(
+		prefix,
+		applicationCreatorHandler,
+		applicationDeletorHandler,
+		applicationExistsHandler,
+		userWhoamiHandler,
+	)
 	return request_consumer.New(nsqdAddress, nsqLookupdAddress, botname, messageHandler), nil
 }
