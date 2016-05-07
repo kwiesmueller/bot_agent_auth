@@ -49,7 +49,7 @@ func (a *applicationCreator) Register(authToken string, userName string) error {
 	requestbuilder.AddHeader("Authorization", bearer.CreateBearerHeader(a.applicationName, a.applicationPassword))
 	content, err := json.Marshal(&api.RegisterRequest{
 		AuthToken: api.AuthToken(authToken),
-		UserName: api.UserName(userName),
+		UserName:  api.UserName(userName),
 	})
 	if err != nil {
 		return err
