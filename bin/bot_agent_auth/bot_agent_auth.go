@@ -28,7 +28,7 @@ import (
 
 const (
 	PARAMETER_LOGLEVEL                  = "loglevel"
-	PARAMETER_NSQ_LOOKUPD               = "nsq-lookupd-removeress"
+	PARAMETER_NSQ_LOOKUPD               = "nsq-lookupd-address"
 	PARAMETER_NSQD                      = "nsqd-address"
 	DEFAULT_BOT_NAME                    = "auth"
 	PARAMETER_BOT_NAME                  = "bot-name"
