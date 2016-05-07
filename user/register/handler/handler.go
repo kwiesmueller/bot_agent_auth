@@ -36,7 +36,7 @@ func (h *handler) Help() string {
 
 func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, error) {
 	parts := strings.Split(request.Message, " ")
-	userName := parts[3]
+	userName := parts[2]
 	logger.Debugf("register user %s", userName)
 	if err := h.register(request.AuthToken, userName); err != nil {
 		logger.Debugf("register %s failed: %v", userName, err)
