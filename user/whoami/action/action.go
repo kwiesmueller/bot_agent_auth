@@ -70,5 +70,5 @@ func (a *applicationCreator) Whoami(authToken string) (*api.UserName, error) {
 	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return nil, err
 	}
-	return response.User, nil
+	return response.UserName, nil
 }
