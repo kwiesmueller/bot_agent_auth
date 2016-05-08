@@ -3,8 +3,9 @@ package action
 import (
 	"github.com/bborbe/log"
 
-	"github.com/bborbe/auth/api"
 	"fmt"
+
+	"github.com/bborbe/auth/api"
 )
 
 var logger = log.DefaultLogger

@@ -3,8 +3,9 @@ package action
 import (
 	"github.com/bborbe/log"
 
-	"github.com/bborbe/auth/api"
 	"fmt"
+
+	"github.com/bborbe/auth/api"
 )
 
 var logger = log.DefaultLogger
@@ -15,13 +16,13 @@ type action struct {
 	callRest CallRest
 }
 
-func New(callRest            CallRest) *action {
+func New(callRest CallRest) *action {
 	m := new(action)
 	m.callRest = callRest
 	return m
 }
 
-func (a *action) Delete(applicationName string) (error) {
+func (a *action) Delete(applicationName string) error {
 	logger.Debugf("delete application %s", applicationName)
 	var request api.DeleteApplicationRequest
 	var response api.DeleteApplicationResponse

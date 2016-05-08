@@ -43,7 +43,7 @@ func New(applicationName string, applicationPassword string, address string, exe
 func (r *rest) Call(path string, method string, request interface{}, response interface{}) error {
 	logger.Debugf("call path %s on %s", path, r.applicationName)
 	start := time.Now()
-	defer logger.Debugf("create completed in %dms", time.Now().Sub(start) / time.Millisecond)
+	defer logger.Debugf("create completed in %dms", time.Now().Sub(start)/time.Millisecond)
 	target := fmt.Sprintf("http://%s%s", r.address, path)
 	logger.Debugf("send message to %s", target)
 	requestbuilder := r.httpRequestBuilderProvider.NewHttpRequestBuilder(target)
@@ -64,7 +64,7 @@ func (r *rest) Call(path string, method string, request interface{}, response in
 	if err != nil {
 		return err
 	}
-	if resp.StatusCode / 100 != 2 {
+	if resp.StatusCode/100 != 2 {
 		return fmt.Errorf("request to %s failed with status: %d", path, resp.StatusCode)
 	}
 	if err = json.NewDecoder(resp.Body).Decode(response); err != nil {
