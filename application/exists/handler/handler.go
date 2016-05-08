@@ -12,7 +12,7 @@ import (
 
 var logger = log.DefaultLogger
 
-type ExistsApplication func(applicationName string) (*bool, error)
+type ExistsApplication func(applicationName string) (bool, error)
 
 type handler struct {
 	parts             []string
@@ -44,7 +44,7 @@ func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, 
 		return response.CreateReponseMessage(fmt.Sprintf("exists application %s failed", applicationName)), nil
 	}
 	logger.Debugf("application exists => send success message")
-	if *exists {
+	if exists {
 		return response.CreateReponseMessage(fmt.Sprintf("application %s exists", applicationName)), nil
 	} else {
 		return response.CreateReponseMessage(fmt.Sprintf("application %s not exists", applicationName)), nil

@@ -24,28 +24,29 @@ import (
 	http_client_builder "github.com/bborbe/http/client_builder"
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
 	"github.com/bborbe/log"
+	"github.com/bborbe/bot_agent_auth/rest"
 )
 
 const (
-	PARAMETER_LOGLEVEL                  = "loglevel"
-	PARAMETER_NSQ_LOOKUPD               = "nsq-lookupd-address"
-	PARAMETER_NSQD                      = "nsqd-address"
-	DEFAULT_BOT_NAME                    = "auth"
-	PARAMETER_BOT_NAME                  = "bot-name"
-	PARAMETER_AUTH_ADDRESS              = "auth-address"
-	PARAMETER_AUTH_APPLICATION_NAME     = "auth-application-name"
+	PARAMETER_LOGLEVEL = "loglevel"
+	PARAMETER_NSQ_LOOKUPD = "nsq-lookupd-address"
+	PARAMETER_NSQD = "nsqd-address"
+	DEFAULT_BOT_NAME = "auth"
+	PARAMETER_BOT_NAME = "bot-name"
+	PARAMETER_AUTH_ADDRESS = "auth-address"
+	PARAMETER_AUTH_APPLICATION_NAME = "auth-application-name"
 	PARAMETER_AUTH_APPLICATION_PASSWORD = "auth-application-password"
-	PREFIX                              = "/auth"
+	PREFIX = "/auth"
 )
 
 var (
-	logger                     = log.DefaultLogger
-	logLevelPtr                = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, log.FLAG_USAGE)
-	nsqLookupdAddressPtr       = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
-	nsqdAddressPtr             = flag.String(PARAMETER_NSQD, "", "nsqd address")
-	botNamePtr                 = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
-	authAddressPtr             = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
-	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
+	logger = log.DefaultLogger
+	logLevelPtr = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, log.FLAG_USAGE)
+	nsqLookupdAddressPtr = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
+	nsqdAddressPtr = flag.String(PARAMETER_NSQD, "", "nsqd address")
+	botNamePtr = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
+	authAddressPtr = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
+	authApplicationNamePtr = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
 )
 
@@ -94,25 +95,27 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 	httpRequestBuilderProvider := http_requestbuilder.NewHttpRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
 
-	applicationCreatorAction := application_creator_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	restCaller := rest.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+
+	applicationCreatorAction := application_creator_action.New(restCaller.Call)
 	applicationCreatorHandler := application_creator_handler.New(prefix, applicationCreatorAction.Create)
 
-	applicationDeletorAction := application_deletor_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	applicationDeletorAction := application_deletor_action.New(restCaller.Call)
 	applicationDeletorHandler := application_deletor_handler.New(prefix, applicationDeletorAction.Delete)
 
-	applicationExistsAction := application_exists_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	applicationExistsAction := application_exists_action.New(restCaller.Call)
 	applicationExistsHandler := application_exists_handler.New(prefix, applicationExistsAction.Exists)
 
-	userWhoamiAction := user_whoami_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	userWhoamiAction := user_whoami_action.New(restCaller.Call)
 	userWhoamiHandler := user_whoami_handler.New(prefix, userWhoamiAction.Whoami)
 
-	userRegisterAction := user_register_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	userRegisterAction := user_register_action.New(restCaller.Call)
 	userRegisterHandler := user_register_handler.New(prefix, userRegisterAction.Register)
 
-	tokenAddAction := token_add_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	tokenAddAction := token_add_action.New(restCaller.Call)
 	tokenAddHandler := token_add_handler.New(prefix, tokenAddAction.Add)
 
-	tokenRemoveAction := token_remove_action.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	tokenRemoveAction := token_remove_action.New(restCaller.Call)
 	tokenRemoveHandler := token_remove_handler.New(prefix, tokenRemoveAction.Remove)
 
 	messageHandler := message_handler.New(

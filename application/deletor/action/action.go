@@ -1,60 +1,34 @@
 package action
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/bborbe/log"
 
-	"time"
-
-	"github.com/bborbe/http/bearer"
-	http_requestbuilder "github.com/bborbe/http/requestbuilder"
+	"github.com/bborbe/auth/api"
+	"fmt"
 )
 
 var logger = log.DefaultLogger
 
-type ExecuteRequest func(req *http.Request) (resp *http.Response, err error)
+type CallRest func(path string, method string, request interface{}, response interface{}) error
 
-type applicationDeletor struct {
-	applicationName            string
-	applicationPassword        string
-	address                    string
-	httpRequestBuilderProvider http_requestbuilder.HttpRequestBuilderProvider
-	executeRequest             ExecuteRequest
+type action struct {
+	callRest CallRest
 }
 
-func New(applicationName string, applicationPassword string, address string, executeRequest ExecuteRequest, httpRequestBuilderProvider http_requestbuilder.HttpRequestBuilderProvider) *applicationDeletor {
-	m := new(applicationDeletor)
-	m.applicationName = applicationName
-	m.applicationPassword = applicationPassword
-	m.address = address
-	m.httpRequestBuilderProvider = httpRequestBuilderProvider
-	m.executeRequest = executeRequest
+func New(callRest            CallRest) *action {
+	m := new(action)
+	m.callRest = callRest
 	return m
 }
 
-func (s *applicationDeletor) Delete(applicationName string) error {
-	logger.Debugf("create application %s", applicationName)
-	start := time.Now()
-	defer logger.Debugf("create completed in %dms", time.Now().Sub(start)/time.Millisecond)
-	target := fmt.Sprintf("http://%s/application/%s", s.address, applicationName)
-	logger.Debugf("send message to %s", target)
-	requestbuilder := s.httpRequestBuilderProvider.NewHttpRequestBuilder(target)
-	requestbuilder.SetMethod("DELETE")
-	requestbuilder.AddContentType("application/json")
-	requestbuilder.AddHeader("Authorization", bearer.CreateBearerHeader("auth", s.applicationPassword))
-	req, err := requestbuilder.Build()
-	if err != nil {
+func (a *action) Delete(applicationName string) (error) {
+	logger.Debugf("delete application %s", applicationName)
+	var request api.DeleteApplicationRequest
+	var response api.DeleteApplicationResponse
+	if err := a.callRest(fmt.Sprintf("/application/%s", applicationName), "DELETE", &request, &response); err != nil {
+		logger.Debugf("delete application %s failed", applicationName)
 		return err
 	}
-	logger.Debugf("send delete application request to auth api")
-	resp, err := s.executeRequest(req)
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode/100 != 2 {
-		return fmt.Errorf("delete application request failed with status: %d", resp.StatusCode)
-	}
+	logger.Debugf("delete application %s successful", applicationName)
 	return nil
 }
