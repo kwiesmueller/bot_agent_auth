@@ -27,7 +27,7 @@ func (a *action) Create(applicationName string) (*api.ApplicationPassword, error
 	}
 	var response api.CreateApplicationResponse
 	if err := a.callRest("/application", "POST", &request, &response); err != nil {
-		logger.Debugf("create application %s failed", applicationName)
+		logger.Debugf("create application %s failed: %v", applicationName, err)
 		return nil, err
 	}
 	logger.Debugf("create application %s successful", applicationName)

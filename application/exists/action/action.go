@@ -27,7 +27,7 @@ func (a *action) Exists(applicationName string) (bool, error) {
 	var request api.GetApplicationRequest
 	var response api.GetApplicationResponse
 	if err := a.callRest(fmt.Sprintf("/application/%s", applicationName), "GET", &request, &response); err != nil {
-		logger.Debugf("exists application %s failed", applicationName)
+		logger.Debugf("exists application %s failed: %v", applicationName, err)
 		return false, err
 	}
 	logger.Debugf("exists application %s successful", applicationName)

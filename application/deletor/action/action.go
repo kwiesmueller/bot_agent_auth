@@ -27,7 +27,7 @@ func (a *action) Delete(applicationName string) error {
 	var request api.DeleteApplicationRequest
 	var response api.DeleteApplicationResponse
 	if err := a.callRest(fmt.Sprintf("/application/%s", applicationName), "DELETE", &request, &response); err != nil {
-		logger.Debugf("delete application %s failed", applicationName)
+		logger.Debugf("delete application %s failed: %v", applicationName, err)
 		return err
 	}
 	logger.Debugf("delete application %s successful", applicationName)
