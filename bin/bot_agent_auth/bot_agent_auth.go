@@ -19,6 +19,8 @@ import (
 	token_remove_handler "github.com/bborbe/bot_agent_auth/token/remove/handler"
 	user_register_action "github.com/bborbe/bot_agent_auth/user/register/action"
 	user_register_handler "github.com/bborbe/bot_agent_auth/user/register/handler"
+	user_unregister_action "github.com/bborbe/bot_agent_auth/user/unregister/action"
+	user_unregister_handler "github.com/bborbe/bot_agent_auth/user/unregister/handler"
 	user_whoami_action "github.com/bborbe/bot_agent_auth/user/whoami/action"
 	user_whoami_handler "github.com/bborbe/bot_agent_auth/user/whoami/handler"
 	flag "github.com/bborbe/flagenv"
@@ -112,6 +114,9 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 	userRegisterAction := user_register_action.New(restCaller.Call)
 	userRegisterHandler := user_register_handler.New(prefix, userRegisterAction.Register)
 
+	userUnregisterAction := user_unregister_action.New(restCaller.Call)
+	userUnregisterHandler := user_unregister_handler.New(prefix, userUnregisterAction.Unregister)
+
 	tokenAddAction := token_add_action.New(restCaller.Call)
 	tokenAddHandler := token_add_handler.New(prefix, tokenAddAction.Add)
 
@@ -125,6 +130,7 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 		applicationExistsHandler,
 		userWhoamiHandler,
 		userRegisterHandler,
+		userUnregisterHandler,
 		tokenAddHandler,
 		tokenRemoveHandler,
 	)
