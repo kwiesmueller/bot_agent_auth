@@ -50,25 +50,35 @@ func (r *rest) Call(path string, method string, request interface{}, response in
 	requestbuilder.SetMethod(method)
 	requestbuilder.AddContentType("application/json")
 	requestbuilder.AddHeader("Authorization", bearer.CreateBearerHeader(r.applicationName, r.applicationPassword))
-	content, err := json.Marshal(request)
-	if err != nil {
-		return err
+	if request != nil {
+		content, err := json.Marshal(request)
+		if err != nil {
+			logger.Debugf("marhal request failed: %v", err)
+			return err
+		}
+		logger.Debugf("send request to %s: %s", path, string(content))
+		requestbuilder.SetBody(bytes.NewBuffer(content))
 	}
-	logger.Debugf("send request to %s: %s", path, string(content))
-	requestbuilder.SetBody(bytes.NewBuffer(content))
 	req, err := requestbuilder.Build()
 	if err != nil {
+		logger.Debugf("build request failed: %v", err)
 		return err
 	}
 	resp, err := r.executeRequest(req)
 	if err != nil {
+		logger.Debugf("execute request failed: %v", err)
 		return err
 	}
 	if resp.StatusCode/100 != 2 {
+		logger.Debugf("status %d not 2xx", resp.StatusCode)
 		return fmt.Errorf("request to %s failed with status: %d", path, resp.StatusCode)
 	}
-	if err = json.NewDecoder(resp.Body).Decode(response); err != nil {
-		return err
+	if response != nil {
+		if err = json.NewDecoder(resp.Body).Decode(response); err != nil {
+			logger.Debugf("decode response failed: %v", err)
+			return err
+		}
 	}
+	logger.Debugf("rest call successful")
 	return nil
 }

@@ -4,8 +4,6 @@ import (
 	"github.com/bborbe/log"
 
 	"fmt"
-
-	"github.com/bborbe/auth/api"
 )
 
 var logger = log.DefaultLogger
@@ -24,9 +22,7 @@ func New(callRest CallRest) *action {
 
 func (a *action) Delete(applicationName string) error {
 	logger.Debugf("delete application %s", applicationName)
-	var request api.DeleteApplicationRequest
-	var response api.DeleteApplicationResponse
-	if err := a.callRest(fmt.Sprintf("/application/%s", applicationName), "DELETE", &request, &response); err != nil {
+	if err := a.callRest(fmt.Sprintf("/application/%s", applicationName), "DELETE", nil, nil); err != nil {
 		logger.Debugf("delete application %s failed: %v", applicationName, err)
 		return err
 	}

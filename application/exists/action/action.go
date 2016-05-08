@@ -24,9 +24,8 @@ func New(callRest CallRest) *action {
 
 func (a *action) Exists(applicationName string) (bool, error) {
 	logger.Debugf("exists application %s", applicationName)
-	var request api.GetApplicationRequest
 	var response api.GetApplicationResponse
-	if err := a.callRest(fmt.Sprintf("/application/%s", applicationName), "GET", &request, &response); err != nil {
+	if err := a.callRest(fmt.Sprintf("/application/%s", applicationName), "GET", nil, &response); err != nil {
 		logger.Debugf("exists application %s failed: %v", applicationName, err)
 		return false, err
 	}

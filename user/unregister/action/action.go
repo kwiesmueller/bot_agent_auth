@@ -4,8 +4,6 @@ import (
 	"github.com/bborbe/log"
 
 	"fmt"
-
-	"github.com/bborbe/auth/api"
 )
 
 var logger = log.DefaultLogger
@@ -24,11 +22,7 @@ func New(callRest CallRest) *action {
 
 func (a *action) Unregister(authToken string) error {
 	logger.Debugf("unregister user with token %s", authToken)
-	request := api.UnRegisterRequest{
-		AuthToken: api.AuthToken(authToken),
-	}
-	var response api.UnRegisterResponse
-	if err := a.callRest(fmt.Sprintf("/user"), "DELETE", &request, &response); err != nil {
+	if err := a.callRest(fmt.Sprintf("/user/%s", authToken), "DELETE", nil, nil); err != nil {
 		logger.Debugf("unregister user with token %s failed: %v", authToken, err)
 		return err
 	}
