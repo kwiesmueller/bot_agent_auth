@@ -8,5 +8,5 @@ import (
 type Handler interface {
 	Match(request *message.Request) bool
 	message_handler.MessageHandler
-	Help() string
+	Help(request *message.Request) []string
 }

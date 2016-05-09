@@ -17,23 +17,27 @@ type CreateApplication func(applicationName string) (*api.ApplicationPassword, e
 
 type handler struct {
 	parts             []string
+	authToken         string
 	createApplication CreateApplication
 }
 
-func New(prefix string, createApplication CreateApplication) *handler {
+func New(prefix string, authToken string, createApplication CreateApplication) *handler {
 	h := new(handler)
 	h.parts = []string{prefix, "application", "create", "[NAME]"}
+	h.authToken = authToken
 	h.createApplication = createApplication
 	return h
 }
 
 func (h *handler) Match(request *message.Request) bool {
-	parts := strings.Split(request.Message, " ")
-	return matcher.Match(h.parts, parts)
+	return matcher.MatchRequestParts(h.parts, request) && matcher.MatchRequestAuthToken(h.authToken, request)
 }
 
-func (h *handler) Help() string {
-	return strings.Join(h.parts, " ")
+func (h *handler) Help(request *message.Request) []string {
+	if matcher.MatchRequestAuthToken(h.authToken, request) {
+		return []string{strings.Join(h.parts, " ")}
+	}
+	return []string{}
 }
 
 func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, error) {

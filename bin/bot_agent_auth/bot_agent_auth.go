@@ -35,6 +35,7 @@ const (
 	PARAMETER_NSQD                      = "nsqd-address"
 	DEFAULT_BOT_NAME                    = "auth"
 	PARAMETER_BOT_NAME                  = "bot-name"
+	PARAMETER_ADMIN                     = "admin"
 	PARAMETER_AUTH_ADDRESS              = "auth-address"
 	PARAMETER_AUTH_APPLICATION_NAME     = "auth-application-name"
 	PARAMETER_AUTH_APPLICATION_PASSWORD = "auth-application-password"
@@ -50,6 +51,7 @@ var (
 	authAddressPtr             = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
 	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
+	adminAuthTokenPtr          = flag.String(PARAMETER_ADMIN, "", "admin")
 )
 
 func main() {
@@ -58,7 +60,7 @@ func main() {
 
 	logger.SetLevelThreshold(log.LogStringToLevel(*logLevelPtr))
 	logger.Debugf("set log level to %s", *logLevelPtr)
-	err := do(PREFIX, *nsqdAddressPtr, *nsqLookupdAddressPtr, *botNamePtr, *authAddressPtr, *authApplicationNamePtr, *authApplicationPasswordPtr)
+	err := do(PREFIX, *nsqdAddressPtr, *nsqLookupdAddressPtr, *botNamePtr, *authAddressPtr, *authApplicationNamePtr, *authApplicationPasswordPtr, *adminAuthTokenPtr)
 	if err != nil {
 		logger.Fatal(err)
 		logger.Close()
@@ -66,15 +68,15 @@ func main() {
 	}
 }
 
-func do(prefix string, nsqdAddress string, nsqLookupdAddress string, botname string, authAddress string, authApplicationName string, authApplicationPassword string) error {
-	requestConsumer, err := createRequestConsumer(prefix, nsqdAddress, nsqLookupdAddress, botname, authAddress, authApplicationName, authApplicationPassword)
+func do(prefix string, nsqdAddress string, nsqLookupdAddress string, botname string, authAddress string, authApplicationName string, authApplicationPassword string, adminAuthToken string) error {
+	requestConsumer, err := createRequestConsumer(prefix, nsqdAddress, nsqLookupdAddress, botname, authAddress, authApplicationName, authApplicationPassword, adminAuthToken)
 	if err != nil {
 		return err
 	}
 	return requestConsumer.Run()
 }
 
-func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress string, botname string, authAddress string, authApplicationName string, authApplicationPassword string) (request_consumer.RequestConsumer, error) {
+func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress string, botname string, authAddress string, authApplicationName string, authApplicationPassword string, adminAuthToken string) (request_consumer.RequestConsumer, error) {
 	if len(nsqLookupdAddress) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_NSQ_LOOKUPD)
 	}
@@ -100,13 +102,13 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 	restCaller := rest.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
 
 	applicationCreatorAction := application_creator_action.New(restCaller.Call)
-	applicationCreatorHandler := application_creator_handler.New(prefix, applicationCreatorAction.Create)
+	applicationCreatorHandler := application_creator_handler.New(prefix, adminAuthToken, applicationCreatorAction.Create)
 
 	applicationDeletorAction := application_deletor_action.New(restCaller.Call)
-	applicationDeletorHandler := application_deletor_handler.New(prefix, applicationDeletorAction.Delete)
+	applicationDeletorHandler := application_deletor_handler.New(prefix, adminAuthToken, applicationDeletorAction.Delete)
 
 	applicationExistsAction := application_exists_action.New(restCaller.Call)
-	applicationExistsHandler := application_exists_handler.New(prefix, applicationExistsAction.Exists)
+	applicationExistsHandler := application_exists_handler.New(prefix, adminAuthToken, applicationExistsAction.Exists)
 
 	userWhoamiAction := user_whoami_action.New(restCaller.Call)
 	userWhoamiHandler := user_whoami_handler.New(prefix, userWhoamiAction.Whoami)

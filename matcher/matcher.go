@@ -1,6 +1,17 @@
 package matcher
 
-func Match(requiredParts []string, parts []string) bool {
+import (
+	"strings"
+
+	"github.com/bborbe/bot_agent/message"
+)
+
+func MatchRequestParts(requiredParts []string, request *message.Request) bool {
+	parts := strings.Split(request.Message, " ")
+	return MatchParts(requiredParts, parts)
+}
+
+func MatchParts(requiredParts []string, parts []string) bool {
 	if len(requiredParts) != len(parts) {
 		return false
 	}
@@ -15,4 +26,12 @@ func Match(requiredParts []string, parts []string) bool {
 		}
 	}
 	return true
+}
+
+func MatchRequestAuthToken(requiredAuthToken string, request *message.Request) bool {
+	return MatchAuthToken(requiredAuthToken, request.AuthToken)
+}
+
+func MatchAuthToken(requiredAuthToken string, authToken string) bool {
+	return requiredAuthToken == authToken
 }

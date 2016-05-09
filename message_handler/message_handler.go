@@ -42,7 +42,7 @@ func (a *authAgent) HandleMessage(request *message.Request) ([]*message.Response
 		}
 	}
 	if len(responses) == 0 {
-		return a.help(), nil
+		return a.help(request), nil
 	}
 	return responses, nil
 }
@@ -52,11 +52,13 @@ func (a *authAgent) skip() ([]*message.Response, error) {
 	return nil, nil
 }
 
-func (a *authAgent) help() []*message.Response {
+func (a *authAgent) help(request *message.Request) []*message.Response {
 	logger.Debugf("send help message")
 	list := []string{fmt.Sprintf("%s help", a.prefix)}
 	for _, h := range a.handlers {
-		list = append(list, h.Help())
+		for _, m := range h.Help(request) {
+			list = append(list, m)
+		}
 	}
 	sort.Strings(list)
 	return response.CreateReponseMessage(strings.Join(list, "\n"))

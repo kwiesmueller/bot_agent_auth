@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateRequestConsumer(t *testing.T) {
-	createRequestConsumer, err := createRequestConsumer("prefix", "nsqd", "nsqlookupd", "testbot", "auth-api", "auth-app-name", "auth-app-pw")
+	createRequestConsumer, err := createRequestConsumer("prefix", "nsqd", "nsqlookupd", "testbot", "auth-api", "auth-app-name", "auth-app-pw", "asdfasdf")
 	if err := AssertThat(err, NilValue()); err != nil {
 		t.Fatal(err)
 	}

@@ -28,12 +28,11 @@ func New(prefix string, whoami Whoami) *handler {
 }
 
 func (h *handler) Match(request *message.Request) bool {
-	parts := strings.Split(request.Message, " ")
-	return matcher.Match(h.parts, parts)
+	return matcher.MatchRequestParts(h.parts, request)
 }
 
-func (h *handler) Help() string {
-	return strings.Join(h.parts, " ")
+func (h *handler) Help(request *message.Request) []string {
+	return []string{strings.Join(h.parts, " ")}
 }
 
 func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, error) {
