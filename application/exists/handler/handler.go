@@ -2,12 +2,11 @@ package handler
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/bborbe/bot_agent/message"
 	"github.com/bborbe/bot_agent_auth/matcher"
 	"github.com/bborbe/bot_agent_auth/response"
 	"github.com/bborbe/log"
+	"github.com/bborbe/bot_agent_auth/command"
 )
 
 var logger = log.DefaultLogger
@@ -15,33 +14,35 @@ var logger = log.DefaultLogger
 type ExistsApplication func(applicationName string) (bool, error)
 
 type handler struct {
-	parts             []string
+	command           command.Command
 	authToken         string
 	existsApplication ExistsApplication
 }
 
 func New(prefix string, authToken string, existsApplication ExistsApplication) *handler {
 	h := new(handler)
-	h.parts = []string{prefix, "application", "exists", "[NAME]"}
+	h.command = command.New(prefix, "application", "exists", "[NAME]")
 	h.authToken = authToken
 	h.existsApplication = existsApplication
 	return h
 }
 
 func (h *handler) Match(request *message.Request) bool {
-	return matcher.MatchRequestParts(h.parts, request) && matcher.MatchRequestAuthToken(h.authToken, request)
+	return h.command.MatchRequest(request) && matcher.MatchRequestAuthToken(h.authToken, request)
 }
 
 func (h *handler) Help(request *message.Request) []string {
 	if matcher.MatchRequestAuthToken(h.authToken, request) {
-		return []string{strings.Join(h.parts, " ")}
+		return []string{h.command.Help()}
 	}
 	return []string{}
 }
 
 func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, error) {
-	parts := strings.Split(request.Message, " ")
-	applicationName := parts[3]
+	applicationName, err := h.command.Parameter(request, "[NAME]")
+	if err != nil {
+		return nil, err
+	}
 	exists, err := h.existsApplication(applicationName)
 	if err != nil {
 		logger.Debugf("application exists failed => send failure message: %v", err)

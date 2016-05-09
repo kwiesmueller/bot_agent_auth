@@ -2,13 +2,11 @@ package handler
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/bborbe/auth/api"
 	"github.com/bborbe/bot_agent/message"
-	"github.com/bborbe/bot_agent_auth/matcher"
 	"github.com/bborbe/bot_agent_auth/response"
 	"github.com/bborbe/log"
+	"github.com/bborbe/bot_agent_auth/command"
 )
 
 var logger = log.DefaultLogger
@@ -16,23 +14,23 @@ var logger = log.DefaultLogger
 type Whoami func(authToken string) (*api.UserName, error)
 
 type handler struct {
-	parts  []string
-	whoami Whoami
+	command command.Command
+	whoami  Whoami
 }
 
 func New(prefix string, whoami Whoami) *handler {
 	h := new(handler)
-	h.parts = []string{prefix, "whoami"}
+	h.command = command.New(prefix, "whoami")
 	h.whoami = whoami
 	return h
 }
 
 func (h *handler) Match(request *message.Request) bool {
-	return matcher.MatchRequestParts(h.parts, request)
+	return h.command.MatchRequest(request)
 }
 
 func (h *handler) Help(request *message.Request) []string {
-	return []string{strings.Join(h.parts, " ")}
+	return []string{h.command.Help()}
 }
 
 func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, error) {

@@ -1,12 +1,10 @@
 package handler
 
 import (
-	"strings"
-
 	"github.com/bborbe/bot_agent/message"
-	"github.com/bborbe/bot_agent_auth/matcher"
 	"github.com/bborbe/bot_agent_auth/response"
 	"github.com/bborbe/log"
+	"github.com/bborbe/bot_agent_auth/command"
 )
 
 var logger = log.DefaultLogger
@@ -14,23 +12,23 @@ var logger = log.DefaultLogger
 type Unregister func(authToken string) error
 
 type handler struct {
-	parts      []string
+	command    command.Command
 	unregister Unregister
 }
 
 func New(prefix string, unregister Unregister) *handler {
 	h := new(handler)
-	h.parts = []string{prefix, "unregister"}
+	h.command = command.New(prefix, "unregister")
 	h.unregister = unregister
 	return h
 }
 
 func (h *handler) Match(request *message.Request) bool {
-	return matcher.MatchRequestParts(h.parts, request)
+	return h.command.MatchRequest(request)
 }
 
 func (h *handler) Help(request *message.Request) []string {
-	return []string{strings.Join(h.parts, " ")}
+	return []string{h.command.Help()}
 }
 
 func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, error) {

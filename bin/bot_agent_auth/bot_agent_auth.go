@@ -4,6 +4,12 @@ import (
 	"fmt"
 	"os"
 
+	flag "github.com/bborbe/flagenv"
+	http_client_builder "github.com/bborbe/http/client_builder"
+	http_requestbuilder "github.com/bborbe/http/requestbuilder"
+	"github.com/bborbe/bot_agent_auth/message_handler"
+	"github.com/bborbe/bot_agent_auth/rest"
+	"github.com/bborbe/log"
 	"github.com/bborbe/bot_agent/request_consumer"
 	application_creator_action "github.com/bborbe/bot_agent_auth/application/creator/action"
 	application_creator_handler "github.com/bborbe/bot_agent_auth/application/creator/handler"
@@ -11,8 +17,6 @@ import (
 	application_deletor_handler "github.com/bborbe/bot_agent_auth/application/deletor/handler"
 	application_exists_action "github.com/bborbe/bot_agent_auth/application/exists/action"
 	application_exists_handler "github.com/bborbe/bot_agent_auth/application/exists/handler"
-	"github.com/bborbe/bot_agent_auth/message_handler"
-	"github.com/bborbe/bot_agent_auth/rest"
 	token_add_action "github.com/bborbe/bot_agent_auth/token/add/action"
 	token_add_handler "github.com/bborbe/bot_agent_auth/token/add/handler"
 	token_remove_action "github.com/bborbe/bot_agent_auth/token/remove/action"
@@ -23,35 +27,35 @@ import (
 	user_unregister_handler "github.com/bborbe/bot_agent_auth/user/unregister/handler"
 	user_whoami_action "github.com/bborbe/bot_agent_auth/user/whoami/action"
 	user_whoami_handler "github.com/bborbe/bot_agent_auth/user/whoami/handler"
-	flag "github.com/bborbe/flagenv"
-	http_client_builder "github.com/bborbe/http/client_builder"
-	http_requestbuilder "github.com/bborbe/http/requestbuilder"
-	"github.com/bborbe/log"
+	user_add_group_action "github.com/bborbe/bot_agent_auth/user/add_group/action"
+	user_add_group_handler "github.com/bborbe/bot_agent_auth/user/add_group/handler"
+	user_remove_group_action "github.com/bborbe/bot_agent_auth/user/remove_group/action"
+	user_remove_group_handler "github.com/bborbe/bot_agent_auth/user/remove_group/handler"
 )
 
 const (
-	PARAMETER_LOGLEVEL                  = "loglevel"
-	PARAMETER_NSQ_LOOKUPD               = "nsq-lookupd-address"
-	PARAMETER_NSQD                      = "nsqd-address"
-	DEFAULT_BOT_NAME                    = "auth"
-	PARAMETER_BOT_NAME                  = "bot-name"
-	PARAMETER_ADMIN                     = "admin"
-	PARAMETER_AUTH_ADDRESS              = "auth-address"
-	PARAMETER_AUTH_APPLICATION_NAME     = "auth-application-name"
+	PARAMETER_LOGLEVEL = "loglevel"
+	PARAMETER_NSQ_LOOKUPD = "nsq-lookupd-address"
+	PARAMETER_NSQD = "nsqd-address"
+	DEFAULT_BOT_NAME = "auth"
+	PARAMETER_BOT_NAME = "bot-name"
+	PARAMETER_ADMIN = "admin"
+	PARAMETER_AUTH_ADDRESS = "auth-address"
+	PARAMETER_AUTH_APPLICATION_NAME = "auth-application-name"
 	PARAMETER_AUTH_APPLICATION_PASSWORD = "auth-application-password"
-	PREFIX                              = "/auth"
+	PREFIX = "/auth"
 )
 
 var (
-	logger                     = log.DefaultLogger
-	logLevelPtr                = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, log.FLAG_USAGE)
-	nsqLookupdAddressPtr       = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
-	nsqdAddressPtr             = flag.String(PARAMETER_NSQD, "", "nsqd address")
-	botNamePtr                 = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
-	authAddressPtr             = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
-	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
+	logger = log.DefaultLogger
+	logLevelPtr = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, log.FLAG_USAGE)
+	nsqLookupdAddressPtr = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
+	nsqdAddressPtr = flag.String(PARAMETER_NSQD, "", "nsqd address")
+	botNamePtr = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
+	authAddressPtr = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
+	authApplicationNamePtr = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
-	adminAuthTokenPtr          = flag.String(PARAMETER_ADMIN, "", "admin")
+	adminAuthTokenPtr = flag.String(PARAMETER_ADMIN, "", "admin")
 )
 
 func main() {
@@ -125,6 +129,12 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 	tokenRemoveAction := token_remove_action.New(restCaller.Call)
 	tokenRemoveHandler := token_remove_handler.New(prefix, tokenRemoveAction.Remove)
 
+	userAddGroupAction := user_add_group_action.New(restCaller.Call)
+	userAddGroupHandler := user_add_group_handler.New(prefix, adminAuthToken, userAddGroupAction.AddGroupToUser)
+
+	userRemoveGroupAction := user_remove_group_action.New(restCaller.Call)
+	userRemoveGroupHandler := user_remove_group_handler.New(prefix, adminAuthToken, userRemoveGroupAction.RemoveGroupToUser)
+
 	messageHandler := message_handler.New(
 		prefix,
 		applicationCreatorHandler,
@@ -135,6 +145,8 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 		userUnregisterHandler,
 		tokenAddHandler,
 		tokenRemoveHandler,
+		userAddGroupHandler,
+		userRemoveGroupHandler,
 	)
 	return request_consumer.New(nsqdAddress, nsqLookupdAddress, botname, messageHandler), nil
 }
