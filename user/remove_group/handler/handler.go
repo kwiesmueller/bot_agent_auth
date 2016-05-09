@@ -1,12 +1,13 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/bborbe/bot_agent/message"
+	"github.com/bborbe/bot_agent_auth/command"
 	"github.com/bborbe/bot_agent_auth/matcher"
 	"github.com/bborbe/bot_agent_auth/response"
 	"github.com/bborbe/log"
-	"github.com/bborbe/bot_agent_auth/command"
-	"fmt"
 )
 
 var logger = log.DefaultLogger
@@ -28,11 +29,14 @@ func New(prefix string, authToken string, removeGroupToUser RemoveGroupToUser) *
 }
 
 func (h *handler) Match(request *message.Request) bool {
-	return h.command.MatchRequest(request)       && matcher.MatchRequestAuthToken(h.authToken, request)
+	return h.command.MatchRequest(request) && matcher.MatchRequestAuthToken(h.authToken, request)
 }
 
 func (h *handler) Help(request *message.Request) []string {
-	return []string{h.command.Help()}
+	if matcher.MatchRequestAuthToken(h.authToken, request) {
+		return []string{h.command.Help()}
+	}
+	return []string{}
 }
 
 func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, error) {

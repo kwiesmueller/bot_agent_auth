@@ -2,9 +2,9 @@ package handler
 
 import (
 	"github.com/bborbe/bot_agent/message"
+	"github.com/bborbe/bot_agent_auth/command"
 	"github.com/bborbe/bot_agent_auth/response"
 	"github.com/bborbe/log"
-	"github.com/bborbe/bot_agent_auth/command"
 )
 
 var logger = log.DefaultLogger

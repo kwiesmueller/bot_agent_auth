@@ -1,10 +1,11 @@
 package command
 
 import (
-	"github.com/bborbe/bot_agent_auth/matcher"
-	"strings"
-	"github.com/bborbe/bot_agent/message"
 	"fmt"
+	"strings"
+
+	"github.com/bborbe/bot_agent/message"
+	"github.com/bborbe/bot_agent_auth/matcher"
 )
 
 type command struct {
@@ -17,7 +18,7 @@ type Command interface {
 	Help() string
 }
 
-func New(parts... string) *command {
+func New(parts ...string) *command {
 	c := new(command)
 	c.parts = parts
 	return c

@@ -56,7 +56,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&message.Request{
-		Message:   fmt.Sprintf("/auth remove group %s from user %s", groupName, userName),
+		Message: fmt.Sprintf("/auth remove group %s from user %s", groupName, userName),
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)
@@ -90,7 +90,7 @@ func TestHandleMessageFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&message.Request{
-		Message:   fmt.Sprintf("/auth remove group %s from user %s", groupName, userName),
+		Message: fmt.Sprintf("/auth remove group %s from user %s", groupName, userName),
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)

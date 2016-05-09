@@ -4,7 +4,10 @@ import (
 	"strings"
 
 	"github.com/bborbe/bot_agent/message"
+	"github.com/bborbe/log"
 )
+
+var logger = log.DefaultLogger
 
 func MatchRequestParts(requiredParts []string, request *message.Request) bool {
 	parts := strings.Split(request.Message, " ")
@@ -18,8 +21,8 @@ func MatchParts(requiredParts []string, parts []string) bool {
 	for i, _ := range requiredParts {
 		if requiredParts[i] != parts[i] {
 			if len(requiredParts[i]) <= 2 ||
-			requiredParts[i][0:1] != "[" ||
-			requiredParts[i][len(requiredParts[i]) - 1:len(requiredParts[i])] != "]" {
+				requiredParts[i][0:1] != "[" ||
+				requiredParts[i][len(requiredParts[i])-1:len(requiredParts[i])] != "]" {
 				return false
 			}
 		}
@@ -32,5 +35,6 @@ func MatchRequestAuthToken(requiredAuthToken string, request *message.Request) b
 }
 
 func MatchAuthToken(requiredAuthToken string, authToken string) bool {
+	logger.Debugf("compare requiredAuthToken %s with authToken %s", requiredAuthToken, authToken)
 	return requiredAuthToken == authToken
 }

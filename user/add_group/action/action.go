@@ -23,8 +23,8 @@ func New(callRest CallRest) *action {
 func (a *action) AddGroupToUser(groupName string, userName string) error {
 	logger.Debugf("add user %s to group %s", userName, groupName)
 	request := api.AddUserToGroupRequest{
-		UserName: api.UserName(userName),
-		GroupName:     api.GroupName(groupName),
+		UserName:  api.UserName(userName),
+		GroupName: api.GroupName(groupName),
 	}
 	var response api.AddUserToGroupResponse
 	if err := a.callRest("/user_group", "POST", &request, &response); err != nil {

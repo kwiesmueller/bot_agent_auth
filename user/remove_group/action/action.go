@@ -20,11 +20,11 @@ func New(callRest CallRest) *action {
 	return m
 }
 
-func (a *action) RemoveGroupToUser(groupName string,userName string) error {
+func (a *action) RemoveGroupToUser(groupName string, userName string) error {
 	logger.Debugf("remove user %s from group %s", userName, groupName)
 	request := api.AddUserToGroupRequest{
-		UserName: api.UserName(userName),
-		GroupName:     api.GroupName(groupName),
+		UserName:  api.UserName(userName),
+		GroupName: api.GroupName(groupName),
 	}
 	var response api.AddUserToGroupResponse
 	if err := a.callRest("/user_group", "DELETE", &request, &response); err != nil {
