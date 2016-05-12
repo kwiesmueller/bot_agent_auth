@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"github.com/bborbe/log"
 	"time"
-	http_requestbuilder "github.com/bborbe/http/requestbuilder"
+
 	"github.com/bborbe/http/header"
+	http_requestbuilder "github.com/bborbe/http/requestbuilder"
+	"github.com/bborbe/log"
 )
 
 var logger = log.DefaultLogger
@@ -40,7 +41,7 @@ func New(applicationName string, applicationPassword string, address string, exe
 func (r *rest) Call(path string, method string, request interface{}, response interface{}) error {
 	logger.Debugf("call path %s on %s", path, r.applicationName)
 	start := time.Now()
-	defer logger.Debugf("create completed in %dms", time.Now().Sub(start) / time.Millisecond)
+	defer logger.Debugf("create completed in %dms", time.Now().Sub(start)/time.Millisecond)
 	target := fmt.Sprintf("http://%s%s", r.address, path)
 	logger.Debugf("send message to %s", target)
 	requestbuilder := r.httpRequestBuilderProvider.NewHttpRequestBuilder(target)
@@ -66,7 +67,7 @@ func (r *rest) Call(path string, method string, request interface{}, response in
 		logger.Debugf("execute request failed: %v", err)
 		return err
 	}
-	if resp.StatusCode / 100 != 2 {
+	if resp.StatusCode/100 != 2 {
 		logger.Debugf("status %d not 2xx", resp.StatusCode)
 		return fmt.Errorf("request to %s failed with status: %d", path, resp.StatusCode)
 	}
