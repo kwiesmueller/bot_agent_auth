@@ -11,7 +11,7 @@ import (
 )
 
 func TestImplementsHandler(t *testing.T) {
-	c := New("", nil)
+	c := New("", "", nil)
 	var i *h.Handler
 	if err := AssertThat(c, Implements(i)); err != nil {
 		t.Fatal(err)
@@ -19,7 +19,7 @@ func TestImplementsHandler(t *testing.T) {
 }
 
 func TestMatchTrue(t *testing.T) {
-	c := New("/auth", nil)
+	c := New("/auth", "", nil)
 	match := c.Match(&message.Request{
 		Message: "/auth user delete tester",
 	})
@@ -29,7 +29,7 @@ func TestMatchTrue(t *testing.T) {
 }
 
 func TestMatchFalse(t *testing.T) {
-	c := New("/auth", nil)
+	c := New("/auth", "", nil)
 	match := c.Match(&message.Request{
 		Message: "/auth user delete",
 	})
@@ -39,10 +39,10 @@ func TestMatchFalse(t *testing.T) {
 }
 
 func TestHandleMessageSuccess(t *testing.T) {
-	authToken := "abc"
+	username := "tester"
 	counter := 0
-	c := New("/auth", func(_authToken string) error {
-		if err := AssertThat(_authToken, Is(authToken)); err != nil {
+	c := New("/auth", "", func(_username string) error {
+		if err := AssertThat(_username, Is(username)); err != nil {
 			t.Fatal(err)
 		}
 		counter++
@@ -52,8 +52,8 @@ func TestHandleMessageSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&message.Request{
-		Message:   "/auth user delete",
-		AuthToken: authToken,
+		Message:   "/auth user delete tester",
+		AuthToken: username,
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)
@@ -70,10 +70,10 @@ func TestHandleMessageSuccess(t *testing.T) {
 }
 
 func TestHandleMessageFailure(t *testing.T) {
-	authToken := "abc"
+	username := "tester"
 	counter := 0
-	c := New("/auth", func(_authToken string) error {
-		if err := AssertThat(_authToken, Is(authToken)); err != nil {
+	c := New("/auth", "", func(_username string) error {
+		if err := AssertThat(_username, Is(username)); err != nil {
 			t.Fatal(err)
 		}
 		counter++
@@ -83,8 +83,8 @@ func TestHandleMessageFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&message.Request{
-		Message:   "/auth user delete",
-		AuthToken: authToken,
+		Message:   "/auth user delete tester",
+		AuthToken: username,
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)

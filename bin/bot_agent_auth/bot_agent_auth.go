@@ -19,12 +19,12 @@ import (
 	token_remove_handler "github.com/bborbe/bot_agent_auth/token/remove/handler"
 	user_add_group_action "github.com/bborbe/bot_agent_auth/user/add_group/action"
 	user_add_group_handler "github.com/bborbe/bot_agent_auth/user/add_group/handler"
-	user_register_action "github.com/bborbe/bot_agent_auth/user/register/action"
-	user_register_handler "github.com/bborbe/bot_agent_auth/user/register/handler"
 	user_create_action "github.com/bborbe/bot_agent_auth/user/create/action"
 	user_create_handler "github.com/bborbe/bot_agent_auth/user/create/handler"
 	user_delete_action "github.com/bborbe/bot_agent_auth/user/delete/action"
 	user_delete_handler "github.com/bborbe/bot_agent_auth/user/delete/handler"
+	user_register_action "github.com/bborbe/bot_agent_auth/user/register/action"
+	user_register_handler "github.com/bborbe/bot_agent_auth/user/register/handler"
 	user_remove_group_action "github.com/bborbe/bot_agent_auth/user/remove_group/action"
 	user_remove_group_handler "github.com/bborbe/bot_agent_auth/user/remove_group/handler"
 	user_unregister_action "github.com/bborbe/bot_agent_auth/user/unregister/action"
@@ -38,28 +38,28 @@ import (
 )
 
 const (
-	PARAMETER_LOGLEVEL = "loglevel"
-	PARAMETER_NSQ_LOOKUPD = "nsq-lookupd-address"
-	PARAMETER_NSQD = "nsqd-address"
-	DEFAULT_BOT_NAME = "auth"
-	PARAMETER_BOT_NAME = "bot-name"
-	PARAMETER_ADMIN = "admin"
-	PARAMETER_AUTH_ADDRESS = "auth-address"
-	PARAMETER_AUTH_APPLICATION_NAME = "auth-application-name"
+	PARAMETER_LOGLEVEL                  = "loglevel"
+	PARAMETER_NSQ_LOOKUPD               = "nsq-lookupd-address"
+	PARAMETER_NSQD                      = "nsqd-address"
+	DEFAULT_BOT_NAME                    = "auth"
+	PARAMETER_BOT_NAME                  = "bot-name"
+	PARAMETER_ADMIN                     = "admin"
+	PARAMETER_AUTH_ADDRESS              = "auth-address"
+	PARAMETER_AUTH_APPLICATION_NAME     = "auth-application-name"
 	PARAMETER_AUTH_APPLICATION_PASSWORD = "auth-application-password"
-	PREFIX = "/auth"
+	PREFIX                              = "/auth"
 )
 
 var (
-	logger = log.DefaultLogger
-	logLevelPtr = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, log.FLAG_USAGE)
-	nsqLookupdAddressPtr = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
-	nsqdAddressPtr = flag.String(PARAMETER_NSQD, "", "nsqd address")
-	botNamePtr = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
-	authAddressPtr = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
-	authApplicationNamePtr = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
+	logger                     = log.DefaultLogger
+	logLevelPtr                = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, log.FLAG_USAGE)
+	nsqLookupdAddressPtr       = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
+	nsqdAddressPtr             = flag.String(PARAMETER_NSQD, "", "nsqd address")
+	botNamePtr                 = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
+	authAddressPtr             = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
+	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
-	adminAuthTokenPtr = flag.String(PARAMETER_ADMIN, "", "admin")
+	adminAuthTokenPtr          = flag.String(PARAMETER_ADMIN, "", "admin")
 )
 
 func main() {
@@ -128,10 +128,10 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 	userUnregisterHandler := user_unregister_handler.New(prefix, userUnregisterAction.Unregister)
 
 	userCreateAction := user_create_action.New(restCaller.Call)
-	userCreateHandler := user_create_handler.New(prefix, userCreateAction.CreateUser)
+	userCreateHandler := user_create_handler.New(prefix, adminAuthToken, userCreateAction.CreateUser)
 
 	userDeleteAction := user_delete_action.New(restCaller.Call)
-	userDeleteHandler := user_delete_handler.New(prefix, userDeleteAction.DeleteUser)
+	userDeleteHandler := user_delete_handler.New(prefix, adminAuthToken, userDeleteAction.DeleteUser)
 
 	tokenAddAction := token_add_action.New(restCaller.Call)
 	tokenAddHandler := token_add_handler.New(prefix, tokenAddAction.Add)

@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/bborbe/bot_agent/message"
 	"github.com/bborbe/bot_agent_auth/command"
+	"github.com/bborbe/bot_agent_auth/matcher"
 	"github.com/bborbe/bot_agent_auth/response"
 	"github.com/bborbe/log"
 )
@@ -12,19 +13,21 @@ var logger = log.DefaultLogger
 type DeleteUser func(username string) error
 
 type handler struct {
-	command command.Command
-	delete  DeleteUser
+	command   command.Command
+	authToken string
+	delete    DeleteUser
 }
 
-func New(prefix string, delete DeleteUser) *handler {
+func New(prefix string, authToken string, delete DeleteUser) *handler {
 	h := new(handler)
 	h.command = command.New(prefix, "user", "delete", "[USERNAME]")
+	h.authToken = authToken
 	h.delete = delete
 	return h
 }
 
 func (h *handler) Match(request *message.Request) bool {
-	return h.command.MatchRequest(request)
+	return h.command.MatchRequest(request) && matcher.MatchRequestAuthToken(h.authToken, request)
 }
 
 func (h *handler) Help(request *message.Request) []string {

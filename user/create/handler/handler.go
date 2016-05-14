@@ -3,10 +3,10 @@ package handler
 import (
 	"github.com/bborbe/bot_agent/message"
 	"github.com/bborbe/bot_agent_auth/command"
+	"github.com/bborbe/bot_agent_auth/matcher"
 	"github.com/bborbe/bot_agent_auth/response"
-	"github.com/bborbe/log"
 	"github.com/bborbe/http/header"
-	"github.com/bborbe/auth/api"
+	"github.com/bborbe/log"
 )
 
 var logger = log.DefaultLogger
@@ -14,19 +14,21 @@ var logger = log.DefaultLogger
 type Create func(userName string, authToken string) error
 
 type handler struct {
-	command command.Command
-	create  Create
+	command   command.Command
+	authToken string
+	create    Create
 }
 
-func New(prefix string, create Create) *handler {
+func New(prefix string, authToken string, create Create) *handler {
 	h := new(handler)
-	h.command = command.New(prefix, "create", "[USERNAME]", "[PASSWORD]")
+	h.command = command.New(prefix, "user", "create", "[USERNAME]", "[PASSWORD]")
+	h.authToken = authToken
 	h.create = create
 	return h
 }
 
 func (h *handler) Match(request *message.Request) bool {
-	return h.command.MatchRequest(request)
+	return h.command.MatchRequest(request) && matcher.MatchRequestAuthToken(h.authToken, request)
 }
 
 func (h *handler) Help(request *message.Request) []string {

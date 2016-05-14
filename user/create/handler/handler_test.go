@@ -12,7 +12,7 @@ import (
 )
 
 func TestImplementsHandler(t *testing.T) {
-	c := New("", nil)
+	c := New("", "", nil)
 	var i *h.Handler
 	if err := AssertThat(c, Implements(i)); err != nil {
 		t.Fatal(err)
@@ -20,7 +20,7 @@ func TestImplementsHandler(t *testing.T) {
 }
 
 func TestMatchTrue(t *testing.T) {
-	c := New("/auth", nil)
+	c := New("/auth", "", nil)
 	match := c.Match(&message.Request{
 		Message: "/auth user create tester secret",
 	})
@@ -30,7 +30,7 @@ func TestMatchTrue(t *testing.T) {
 }
 
 func TestMatchFalse(t *testing.T) {
-	c := New("/auth", nil)
+	c := New("/auth", "", nil)
 	match := c.Match(&message.Request{
 		Message: "/auth user create tester",
 	})
@@ -44,7 +44,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 	password := "abc"
 	authToken := header.CreateAuthorizationToken(userName, password)
 	counter := 0
-	c := New("/auth", func(_userName string, _authToken string) error {
+	c := New("/auth", "", func(_userName string, _authToken string) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}
@@ -80,7 +80,7 @@ func TestHandleMessageFailure(t *testing.T) {
 	password := "abc"
 	authToken := header.CreateAuthorizationToken(userName, password)
 	counter := 0
-	c := New("/auth", func(_userName string, _authToken string) error {
+	c := New("/auth", "", func(_userName string, _authToken string) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}
