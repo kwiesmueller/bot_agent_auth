@@ -20,12 +20,12 @@ func New(callRest CallRest) *action {
 	return m
 }
 
-func (a *action) Unregister(authToken string) error {
-	logger.Debugf("unregister user with token %s", authToken)
-	if err := a.callRest(fmt.Sprintf("/token/%s", authToken), "DELETE", nil, nil); err != nil {
-		logger.Debugf("unregister user with token %s failed: %v", authToken, err)
+func (a *action) DeleteUser(username string) error {
+	logger.Debugf("delete user %s", username)
+	if err := a.callRest(fmt.Sprintf("/user/%s", username), "DELETE", nil, nil); err != nil {
+		logger.Debugf("delete user %s failed: %v", username, err)
 		return err
 	}
-	logger.Debugf("unregister user with token %s successful", authToken)
+	logger.Debugf("delete user %s successful", username)
 	return nil
 }
