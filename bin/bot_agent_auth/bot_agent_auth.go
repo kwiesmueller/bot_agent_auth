@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/bborbe/bot_agent/producer"
 	"github.com/bborbe/bot_agent/request_consumer"
+	"github.com/bborbe/bot_agent/sender"
 	application_creator_action "github.com/bborbe/bot_agent_auth/application/creator/action"
 	application_creator_handler "github.com/bborbe/bot_agent_auth/application/creator/handler"
 	application_deletor_action "github.com/bborbe/bot_agent_auth/application/deletor/action"
@@ -145,6 +147,13 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 	userRemoveGroupAction := user_remove_group_action.New(restCaller.Call)
 	userRemoveGroupHandler := user_remove_group_handler.New(prefix, adminAuthToken, userRemoveGroupAction.RemoveGroupToUser)
 
+	producer, err := producer.New(nsqdAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	sender := sender.New(producer)
+
 	messageHandler := message_handler.New(
 		prefix,
 		applicationCreatorHandler,
@@ -160,5 +169,5 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 		userAddGroupHandler,
 		userRemoveGroupHandler,
 	)
-	return request_consumer.New(nsqdAddress, nsqLookupdAddress, botname, messageHandler), nil
+	return request_consumer.New(sender.Send, nsqdAddress, nsqLookupdAddress, botname, messageHandler), nil
 }
