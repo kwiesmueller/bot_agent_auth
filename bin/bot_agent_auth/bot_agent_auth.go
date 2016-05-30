@@ -35,6 +35,7 @@ import (
 	user_whoami_handler "github.com/bborbe/bot_agent_auth/user/whoami/handler"
 	flag "github.com/bborbe/flagenv"
 	http_client_builder "github.com/bborbe/http/client_builder"
+	"github.com/bborbe/http/header"
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
 	"github.com/bborbe/log"
 )
@@ -109,42 +110,44 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 	httpRequestBuilderProvider := http_requestbuilder.NewHttpRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
 
-	restCaller := rest.New(authApplicationName, authApplicationPassword, authAddress, httpClient.Do, httpRequestBuilderProvider)
+	restCaller := rest.New(authAddress, httpClient.Do, httpRequestBuilderProvider)
 
-	applicationCreatorAction := application_creator_action.New(restCaller.Call)
+	token := header.CreateAuthorizationToken(authApplicationName, authApplicationPassword)
+
+	applicationCreatorAction := application_creator_action.New(restCaller.Call, token)
 	applicationCreatorHandler := application_creator_handler.New(prefix, adminAuthToken, applicationCreatorAction.Create)
 
-	applicationDeletorAction := application_deletor_action.New(restCaller.Call)
+	applicationDeletorAction := application_deletor_action.New(restCaller.Call, token)
 	applicationDeletorHandler := application_deletor_handler.New(prefix, adminAuthToken, applicationDeletorAction.Delete)
 
-	applicationExistsAction := application_exists_action.New(restCaller.Call)
+	applicationExistsAction := application_exists_action.New(restCaller.Call, token)
 	applicationExistsHandler := application_exists_handler.New(prefix, adminAuthToken, applicationExistsAction.Exists)
 
-	userWhoamiAction := user_whoami_action.New(restCaller.Call)
+	userWhoamiAction := user_whoami_action.New(restCaller.Call, token)
 	userWhoamiHandler := user_whoami_handler.New(prefix, userWhoamiAction.Whoami)
 
-	userRegisterAction := user_register_action.New(restCaller.Call)
+	userRegisterAction := user_register_action.New(restCaller.Call, token)
 	userRegisterHandler := user_register_handler.New(prefix, userRegisterAction.Register)
 
-	userUnregisterAction := user_unregister_action.New(restCaller.Call)
+	userUnregisterAction := user_unregister_action.New(restCaller.Call, token)
 	userUnregisterHandler := user_unregister_handler.New(prefix, userUnregisterAction.Unregister)
 
-	userCreateAction := user_create_action.New(restCaller.Call)
+	userCreateAction := user_create_action.New(restCaller.Call, token)
 	userCreateHandler := user_create_handler.New(prefix, adminAuthToken, userCreateAction.CreateUser)
 
-	userDeleteAction := user_delete_action.New(restCaller.Call)
+	userDeleteAction := user_delete_action.New(restCaller.Call, token)
 	userDeleteHandler := user_delete_handler.New(prefix, adminAuthToken, userDeleteAction.DeleteUser)
 
-	tokenAddAction := token_add_action.New(restCaller.Call)
+	tokenAddAction := token_add_action.New(restCaller.Call, token)
 	tokenAddHandler := token_add_handler.New(prefix, tokenAddAction.Add)
 
-	tokenRemoveAction := token_remove_action.New(restCaller.Call)
+	tokenRemoveAction := token_remove_action.New(restCaller.Call, token)
 	tokenRemoveHandler := token_remove_handler.New(prefix, tokenRemoveAction.Remove)
 
-	userAddGroupAction := user_add_group_action.New(restCaller.Call)
+	userAddGroupAction := user_add_group_action.New(restCaller.Call, token)
 	userAddGroupHandler := user_add_group_handler.New(prefix, adminAuthToken, userAddGroupAction.AddGroupToUser)
 
-	userRemoveGroupAction := user_remove_group_action.New(restCaller.Call)
+	userRemoveGroupAction := user_remove_group_action.New(restCaller.Call, token)
 	userRemoveGroupHandler := user_remove_group_handler.New(prefix, adminAuthToken, userRemoveGroupAction.RemoveGroupToUser)
 
 	producer, err := producer.New(nsqdAddress)

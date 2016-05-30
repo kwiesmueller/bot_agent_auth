@@ -10,15 +10,17 @@ import (
 
 var logger = log.DefaultLogger
 
-type CallRest func(path string, method string, request interface{}, response interface{}) error
+type CallRest func(path string, method string, request interface{}, response interface{}, token string) error
 
 type action struct {
 	callRest CallRest
+	token    string
 }
 
-func New(callRest CallRest) *action {
+func New(callRest CallRest, token string) *action {
 	m := new(action)
 	m.callRest = callRest
+	m.token = token
 	return m
 }
 
@@ -34,7 +36,7 @@ func (a *action) Remove(authToken string, token string) error {
 		Token:     api.AuthToken(token),
 	}
 	var response api.AddTokenResponse
-	if err := a.callRest("/token", "DELETE", &request, &response); err != nil {
+	if err := a.callRest("/token", "DELETE", &request, &response, a.token); err != nil {
 		logger.Debugf("remove token failed: %v", err)
 		return err
 	}

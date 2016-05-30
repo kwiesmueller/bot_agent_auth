@@ -8,15 +8,17 @@ import (
 
 var logger = log.DefaultLogger
 
-type CallRest func(path string, method string, request interface{}, response interface{}) error
+type CallRest func(path string, method string, request interface{}, response interface{}, token string) error
 
 type action struct {
 	callRest CallRest
+	token    string
 }
 
-func New(callRest CallRest) *action {
+func New(callRest CallRest, token string) *action {
 	m := new(action)
 	m.callRest = callRest
+	m.token = token
 	return m
 }
 
@@ -27,7 +29,7 @@ func (a *action) RemoveGroupToUser(groupName string, userName string) error {
 		GroupName: api.GroupName(groupName),
 	}
 	var response api.AddUserToGroupResponse
-	if err := a.callRest("/user_group", "DELETE", &request, &response); err != nil {
+	if err := a.callRest("/user_group", "DELETE", &request, &response, a.token); err != nil {
 		logger.Debugf("remove user %v from group %v failed: %v", userName, groupName, err)
 		return err
 	}
