@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	. "github.com/bborbe/assert"
-	"github.com/bborbe/bot_agent/message"
+	"github.com/bborbe/bot_agent/api"
 	h "github.com/bborbe/bot_agent_auth/handler"
 )
 
@@ -20,7 +20,7 @@ func TestImplementsHandler(t *testing.T) {
 
 func TestMatchTrue(t *testing.T) {
 	c := New("/auth", "", nil)
-	match := c.Match(&message.Request{
+	match := c.Match(&api.Request{
 		Message: "/auth remove group admin from user tester",
 	})
 	if err := AssertThat(match, Is(true)); err != nil {
@@ -30,7 +30,7 @@ func TestMatchTrue(t *testing.T) {
 
 func TestMatchFalse(t *testing.T) {
 	c := New("/auth", "", nil)
-	match := c.Match(&message.Request{
+	match := c.Match(&api.Request{
 		Message: "/auth remove group admin from user",
 	})
 	if err := AssertThat(match, Is(false)); err != nil {
@@ -55,7 +55,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 	if err := AssertThat(counter, Is(0)); err != nil {
 		t.Fatal(err)
 	}
-	responses, err := c.HandleMessage(&message.Request{
+	responses, err := c.HandleMessage(&api.Request{
 		Message: fmt.Sprintf("/auth remove group %s from user %s", groupName, userName),
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
@@ -89,7 +89,7 @@ func TestHandleMessageFailure(t *testing.T) {
 	if err := AssertThat(counter, Is(0)); err != nil {
 		t.Fatal(err)
 	}
-	responses, err := c.HandleMessage(&message.Request{
+	responses, err := c.HandleMessage(&api.Request{
 		Message: fmt.Sprintf("/auth remove group %s from user %s", groupName, userName),
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {

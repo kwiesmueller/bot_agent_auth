@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/bborbe/bot_agent/message"
+	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent_auth/matcher"
 )
 
@@ -13,8 +13,8 @@ type command struct {
 }
 
 type Command interface {
-	MatchRequest(request *message.Request) bool
-	Parameter(request *message.Request, key string) (string, error)
+	MatchRequest(request *api.Request) bool
+	Parameter(request *api.Request, key string) (string, error)
 	Help() string
 }
 
@@ -28,11 +28,11 @@ func (c *command) Help() string {
 	return strings.Join(c.parts, " ")
 }
 
-func (c *command) MatchRequest(request *message.Request) bool {
+func (c *command) MatchRequest(request *api.Request) bool {
 	return matcher.MatchRequestParts(c.parts, request)
 }
 
-func (c *command) Parameter(request *message.Request, key string) (string, error) {
+func (c *command) Parameter(request *api.Request, key string) (string, error) {
 	if !c.MatchRequest(request) {
 		return "", fmt.Errorf("message does not match command")
 	}

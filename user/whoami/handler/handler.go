@@ -3,8 +3,8 @@ package handler
 import (
 	"fmt"
 
-	"github.com/bborbe/auth/api"
-	"github.com/bborbe/bot_agent/message"
+	auth_api "github.com/bborbe/auth/api"
+	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent_auth/command"
 	"github.com/bborbe/bot_agent_auth/response"
 	"github.com/bborbe/log"
@@ -12,7 +12,7 @@ import (
 
 var logger = log.DefaultLogger
 
-type Whoami func(authToken string) (*api.UserName, error)
+type Whoami func(authToken string) (*auth_api.UserName, error)
 
 type handler struct {
 	command command.Command
@@ -26,15 +26,15 @@ func New(prefix string, whoami Whoami) *handler {
 	return h
 }
 
-func (h *handler) Match(request *message.Request) bool {
+func (h *handler) Match(request *api.Request) bool {
 	return h.command.MatchRequest(request)
 }
 
-func (h *handler) Help(request *message.Request) []string {
+func (h *handler) Help(request *api.Request) []string {
 	return []string{h.command.Help()}
 }
 
-func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, error) {
+func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	userName, err := h.whoami(request.AuthToken)
 	var name string
 	if err != nil {

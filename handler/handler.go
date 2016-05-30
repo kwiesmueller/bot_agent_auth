@@ -1,12 +1,11 @@
 package handler
 
 import (
-	"github.com/bborbe/bot_agent/message"
-	"github.com/bborbe/bot_agent/message_handler"
+	"github.com/bborbe/bot_agent/api"
 )
 
 type Handler interface {
-	Match(request *message.Request) bool
-	message_handler.MessageHandler
-	Help(request *message.Request) []string
+	Match(request *api.Request) bool
+	api.MessageHandler
+	Help(request *api.Request) []string
 }

@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/bborbe/bot_agent/message"
+	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent_auth/command"
 	"github.com/bborbe/bot_agent_auth/matcher"
 	"github.com/bborbe/bot_agent_auth/response"
@@ -26,15 +26,15 @@ func New(prefix string, authToken string, delete DeleteUser) *handler {
 	return h
 }
 
-func (h *handler) Match(request *message.Request) bool {
+func (h *handler) Match(request *api.Request) bool {
 	return h.command.MatchRequest(request) && matcher.MatchRequestAuthToken(h.authToken, request)
 }
 
-func (h *handler) Help(request *message.Request) []string {
+func (h *handler) Help(request *api.Request) []string {
 	return []string{h.command.Help()}
 }
 
-func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, error) {
+func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	logger.Debugf("delete user")
 	username, err := h.command.Parameter(request, "[USERNAME]")
 	if err != nil {

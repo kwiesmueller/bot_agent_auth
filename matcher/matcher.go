@@ -3,13 +3,13 @@ package matcher
 import (
 	"strings"
 
-	"github.com/bborbe/bot_agent/message"
+	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/log"
 )
 
 var logger = log.DefaultLogger
 
-func MatchRequestParts(requiredParts []string, request *message.Request) bool {
+func MatchRequestParts(requiredParts []string, request *api.Request) bool {
 	parts := strings.Split(request.Message, " ")
 	return MatchParts(requiredParts, parts)
 }
@@ -30,7 +30,7 @@ func MatchParts(requiredParts []string, parts []string) bool {
 	return true
 }
 
-func MatchRequestAuthToken(requiredAuthToken string, request *message.Request) bool {
+func MatchRequestAuthToken(requiredAuthToken string, request *api.Request) bool {
 	return MatchAuthToken(requiredAuthToken, request.AuthToken)
 }
 

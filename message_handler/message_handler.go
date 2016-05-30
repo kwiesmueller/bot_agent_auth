@@ -6,7 +6,7 @@ import (
 
 	"sort"
 
-	"github.com/bborbe/bot_agent/message"
+	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent_auth/handler"
 	"github.com/bborbe/bot_agent_auth/response"
 	"github.com/bborbe/log"
@@ -26,12 +26,12 @@ func New(prefix string, handlers ...handler.Handler) *authAgent {
 	return s
 }
 
-func (a *authAgent) HandleMessage(request *message.Request) ([]*message.Response, error) {
+func (a *authAgent) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	logger.Debugf("handle message for token: %v", request.Id)
 	if strings.Index(request.Message, a.prefix) != 0 {
 		return a.skip()
 	}
-	var responses []*message.Response
+	var responses []*api.Response
 	for _, h := range a.handlers {
 		if h.Match(request) {
 			resp, err := h.HandleMessage(request)
@@ -47,12 +47,12 @@ func (a *authAgent) HandleMessage(request *message.Request) ([]*message.Response
 	return responses, nil
 }
 
-func (a *authAgent) skip() ([]*message.Response, error) {
+func (a *authAgent) skip() ([]*api.Response, error) {
 	logger.Debugf("message start not with %s => skip", a.prefix)
 	return nil, nil
 }
 
-func (a *authAgent) help(request *message.Request) []*message.Response {
+func (a *authAgent) help(request *api.Request) []*api.Response {
 	logger.Debugf("send help message")
 	list := []string{fmt.Sprintf("%s help", a.prefix)}
 	for _, h := range a.handlers {

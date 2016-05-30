@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/bborbe/bot_agent/message"
+	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent_auth/command"
 	"github.com/bborbe/bot_agent_auth/response"
 	"github.com/bborbe/log"
@@ -23,15 +23,15 @@ func New(prefix string, unregister Unregister) *handler {
 	return h
 }
 
-func (h *handler) Match(request *message.Request) bool {
+func (h *handler) Match(request *api.Request) bool {
 	return h.command.MatchRequest(request)
 }
 
-func (h *handler) Help(request *message.Request) []string {
+func (h *handler) Help(request *api.Request) []string {
 	return []string{h.command.Help()}
 }
 
-func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, error) {
+func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	logger.Debugf("unregister user with token %s", request.AuthToken)
 	if err := h.unregister(request.AuthToken); err != nil {
 		logger.Debugf("unregister user with token %s failed: %v", request.AuthToken, err)

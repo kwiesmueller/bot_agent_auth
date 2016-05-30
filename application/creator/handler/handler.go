@@ -3,8 +3,8 @@ package handler
 import (
 	"fmt"
 
-	"github.com/bborbe/auth/api"
-	"github.com/bborbe/bot_agent/message"
+	auth_api "github.com/bborbe/auth/api"
+	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent_auth/command"
 	"github.com/bborbe/bot_agent_auth/matcher"
 	"github.com/bborbe/bot_agent_auth/response"
@@ -13,7 +13,7 @@ import (
 
 var logger = log.DefaultLogger
 
-type CreateApplication func(applicationName string) (*api.ApplicationPassword, error)
+type CreateApplication func(applicationName string) (*auth_api.ApplicationPassword, error)
 
 type handler struct {
 	command           command.Command
@@ -29,18 +29,18 @@ func New(prefix string, authToken string, createApplication CreateApplication) *
 	return h
 }
 
-func (h *handler) Match(request *message.Request) bool {
+func (h *handler) Match(request *api.Request) bool {
 	return h.command.MatchRequest(request) && matcher.MatchRequestAuthToken(h.authToken, request)
 }
 
-func (h *handler) Help(request *message.Request) []string {
+func (h *handler) Help(request *api.Request) []string {
 	if matcher.MatchRequestAuthToken(h.authToken, request) {
 		return []string{h.command.Help()}
 	}
 	return []string{}
 }
 
-func (h *handler) HandleMessage(request *message.Request) ([]*message.Response, error) {
+func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	applicationName, err := h.command.Parameter(request, "[NAME]")
 	if err != nil {
 		return nil, err
