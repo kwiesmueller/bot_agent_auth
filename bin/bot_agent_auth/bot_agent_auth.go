@@ -13,7 +13,7 @@ import (
 	application_deletor_handler "github.com/bborbe/bot_agent_auth/application/deletor/handler"
 	application_exists_action "github.com/bborbe/bot_agent_auth/application/exists/action"
 	application_exists_handler "github.com/bborbe/bot_agent_auth/application/exists/handler"
-	"github.com/bborbe/bot_agent_auth/message_handler"
+	"github.com/bborbe/bot_agent/message_handler"
 	"github.com/bborbe/bot_agent_auth/rest"
 	token_add_action "github.com/bborbe/bot_agent_auth/token/add/action"
 	token_add_handler "github.com/bborbe/bot_agent_auth/token/add/handler"

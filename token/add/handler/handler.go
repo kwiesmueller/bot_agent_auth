@@ -2,8 +2,8 @@ package handler
 
 import (
 	"github.com/bborbe/bot_agent/api"
-	"github.com/bborbe/bot_agent_auth/command"
-	"github.com/bborbe/bot_agent_auth/response"
+	"github.com/bborbe/bot_agent/command"
+	"github.com/bborbe/bot_agent/response"
 	"github.com/bborbe/log"
 )
 
