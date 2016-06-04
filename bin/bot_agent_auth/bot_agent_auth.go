@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"os"
 
+	"strings"
+
+	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/message_handler/match"
+	"github.com/bborbe/bot_agent/message_handler/restrict_to_tokens"
 	"github.com/bborbe/bot_agent/producer"
 	"github.com/bborbe/bot_agent/request_consumer"
 	"github.com/bborbe/bot_agent/rest"
@@ -51,6 +55,7 @@ const (
 	PARAMETER_AUTH_APPLICATION_NAME     = "auth-application-name"
 	PARAMETER_AUTH_APPLICATION_PASSWORD = "auth-application-password"
 	PREFIX                              = "/auth"
+	PARAMETER_RESTRICT_TO_TOKENS        = "restrict-to-tokens"
 )
 
 var (
@@ -63,6 +68,7 @@ var (
 	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
 	adminAuthTokenPtr          = flag.String(PARAMETER_ADMIN, "", "admin")
+	restrictToTokensPtr        = flag.String(PARAMETER_RESTRICT_TO_TOKENS, "", "restrict to tokens")
 )
 
 func main() {
@@ -71,7 +77,17 @@ func main() {
 
 	logger.SetLevelThreshold(log.LogStringToLevel(*logLevelPtr))
 	logger.Debugf("set log level to %s", *logLevelPtr)
-	err := do(PREFIX, *nsqdAddressPtr, *nsqLookupdAddressPtr, *botNamePtr, *authAddressPtr, *authApplicationNamePtr, *authApplicationPasswordPtr, *adminAuthTokenPtr)
+	err := do(
+		PREFIX,
+		*nsqdAddressPtr,
+		*nsqLookupdAddressPtr,
+		*botNamePtr,
+		*authAddressPtr,
+		*authApplicationNamePtr,
+		*authApplicationPasswordPtr,
+		*adminAuthTokenPtr,
+		*restrictToTokensPtr,
+	)
 	if err != nil {
 		logger.Fatal(err)
 		logger.Close()
@@ -79,15 +95,45 @@ func main() {
 	}
 }
 
-func do(prefix string, nsqdAddress string, nsqLookupdAddress string, botname string, authAddress string, authApplicationName string, authApplicationPassword string, adminAuthToken string) error {
-	requestConsumer, err := createRequestConsumer(prefix, nsqdAddress, nsqLookupdAddress, botname, authAddress, authApplicationName, authApplicationPassword, adminAuthToken)
+func do(
+	prefix string,
+	nsqdAddress string,
+	nsqLookupdAddress string,
+	botname string,
+	authAddress string,
+	authApplicationName string,
+	authApplicationPassword string,
+	adminAuthToken string,
+	restrictToTokens string,
+) error {
+	requestConsumer, err := createRequestConsumer(
+		prefix,
+		nsqdAddress,
+		nsqLookupdAddress,
+		botname,
+		authAddress,
+		authApplicationName,
+		authApplicationPassword,
+		adminAuthToken,
+		restrictToTokens,
+	)
 	if err != nil {
 		return err
 	}
 	return requestConsumer.Run()
 }
 
-func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress string, botname string, authAddress string, authApplicationName string, authApplicationPassword string, adminAuthToken string) (request_consumer.RequestConsumer, error) {
+func createRequestConsumer(
+	prefix string,
+	nsqdAddress string,
+	nsqLookupdAddress string,
+	botname string,
+	authAddress string,
+	authApplicationName string,
+	authApplicationPassword string,
+	adminAuthToken string,
+	restrictToTokens string,
+) (request_consumer.RequestConsumer, error) {
 	if len(nsqLookupdAddress) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_NSQ_LOOKUPD)
 	}
@@ -157,7 +203,7 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 
 	sender := sender.New(producer)
 
-	messageHandler := match.New(
+	var messageHandler api.MessageHandler = match.New(
 		prefix,
 		applicationCreatorHandler,
 		applicationDeletorHandler,
@@ -172,5 +218,14 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 		userAddGroupHandler,
 		userRemoveGroupHandler,
 	)
+
+	tokens := strings.Split(restrictToTokens, ",")
+	if len(tokens) > 0 {
+		messageHandler = restrict_to_tokens.New(
+			messageHandler,
+			tokens,
+		)
+	}
+
 	return request_consumer.New(sender.Send, nsqdAddress, nsqLookupdAddress, botname, messageHandler), nil
 }
