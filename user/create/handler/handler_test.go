@@ -7,7 +7,7 @@ import (
 
 	. "github.com/bborbe/assert"
 	"github.com/bborbe/bot_agent/api"
-	h "github.com/bborbe/bot_agent/handler"
+	h "github.com/bborbe/bot_agent/message_handler/match"
 	"github.com/bborbe/http/header"
 )
 

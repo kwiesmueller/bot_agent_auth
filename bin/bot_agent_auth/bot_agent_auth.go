@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/bborbe/bot_agent/message_handler"
+	"github.com/bborbe/bot_agent/message_handler/match"
 	"github.com/bborbe/bot_agent/producer"
 	"github.com/bborbe/bot_agent/request_consumer"
 	"github.com/bborbe/bot_agent/rest"
@@ -157,7 +157,7 @@ func createRequestConsumer(prefix string, nsqdAddress string, nsqLookupdAddress 
 
 	sender := sender.New(producer)
 
-	messageHandler := message_handler.New(
+	messageHandler := match.New(
 		prefix,
 		applicationCreatorHandler,
 		applicationDeletorHandler,

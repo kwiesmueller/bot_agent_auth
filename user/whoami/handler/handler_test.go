@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	. "github.com/bborbe/assert"
-	h "github.com/bborbe/bot_agent/handler"
+	h "github.com/bborbe/bot_agent/message_handler/match"
 )
 
 func TestImplementsHandler(t *testing.T) {
