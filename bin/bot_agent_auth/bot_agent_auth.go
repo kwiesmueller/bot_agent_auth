@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"strings"
-
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/message_handler/match"
 	"github.com/bborbe/bot_agent/message_handler/restrict_to_tokens"
@@ -219,7 +217,7 @@ func createRequestConsumer(
 		userRemoveGroupHandler,
 	)
 
-	tokens := strings.Split(restrictToTokens, ",")
+	tokens := restrict_to_tokens.ParseRestrictToken(restrictToTokens)
 	if len(tokens) > 0 {
 		messageHandler = restrict_to_tokens.New(
 			messageHandler,
