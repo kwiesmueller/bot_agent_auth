@@ -40,6 +40,7 @@ import (
 	"github.com/bborbe/http/header"
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
 	"github.com/bborbe/log"
+	"runtime"
 )
 
 const (
@@ -75,6 +76,9 @@ func main() {
 
 	logger.SetLevelThreshold(log.LogStringToLevel(*logLevelPtr))
 	logger.Debugf("set log level to %s", *logLevelPtr)
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	err := do(
 		PREFIX,
 		*nsqdAddressPtr,
