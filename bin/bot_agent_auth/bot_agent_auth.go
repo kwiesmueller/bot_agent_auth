@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"runtime"
+
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/message_handler/match"
 	"github.com/bborbe/bot_agent/message_handler/restrict_to_tokens"
@@ -40,7 +42,6 @@ import (
 	"github.com/bborbe/http/header"
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
 	"github.com/bborbe/log"
-	"runtime"
 )
 
 const (
