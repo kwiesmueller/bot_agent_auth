@@ -37,7 +37,7 @@ func (a *action) Add(authToken string, token string) error {
 		Token:     model.AuthToken(token),
 	}
 	var response v1.AddTokenResponse
-	if err := a.callRest("/api/v1.0/token", "POST", &request, &response, a.token); err != nil {
+	if err := a.callRest("/api/1.0/token", "POST", &request, &response, a.token); err != nil {
 		logger.Debugf("add token failed: %v", err)
 		return err
 	}

@@ -29,7 +29,7 @@ func (a *action) Whoami(authToken string) (*model.UserName, error) {
 		AuthToken: model.AuthToken(authToken),
 	}
 	var response v1.LoginResponse
-	if err := a.callRest("/api/v1.0/login", "POST", &request, &response, a.token); err != nil {
+	if err := a.callRest("/api/1.0/login", "POST", &request, &response, a.token); err != nil {
 		logger.Debugf("who is %s failed: %v", authToken, err)
 		return nil, err
 	}

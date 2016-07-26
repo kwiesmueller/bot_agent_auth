@@ -29,7 +29,7 @@ func (a *action) Create(applicationName string) (*model.ApplicationPassword, err
 		ApplicationName: model.ApplicationName(applicationName),
 	}
 	var response v1.CreateApplicationResponse
-	if err := a.callRest("/api/v1.0/application", "POST", &request, &response, a.token); err != nil {
+	if err := a.callRest("/api/1.0/application", "POST", &request, &response, a.token); err != nil {
 		logger.Debugf("create application %s failed: %v", applicationName, err)
 		return nil, err
 	}

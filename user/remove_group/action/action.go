@@ -30,7 +30,7 @@ func (a *action) RemoveGroupToUser(groupName string, userName string) error {
 		GroupName: model.GroupName(groupName),
 	}
 	var response v1.AddUserToGroupResponse
-	if err := a.callRest("/api/v1.0/user_group", "DELETE", &request, &response, a.token); err != nil {
+	if err := a.callRest("/api/1.0/user_group", "DELETE", &request, &response, a.token); err != nil {
 		logger.Debugf("remove user %v from group %v failed: %v", userName, groupName, err)
 		return err
 	}
