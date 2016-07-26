@@ -131,7 +131,7 @@ func createRequestConsumer(
 	nsqdAddress string,
 	nsqLookupdAddress string,
 	botname string,
-	authAddress string,
+	authUrl string,
 	authApplicationName string,
 	authApplicationPassword string,
 	adminAuthToken string,
@@ -146,7 +146,7 @@ func createRequestConsumer(
 	if len(botname) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_BOT_NAME)
 	}
-	if len(authAddress) == 0 {
+	if len(authUrl) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_URL)
 	}
 	if len(authApplicationName) == 0 {
@@ -159,7 +159,7 @@ func createRequestConsumer(
 	httpRequestBuilderProvider := http_requestbuilder.NewHttpRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
 
-	restCaller := rest.New(authAddress, httpClient.Do, httpRequestBuilderProvider)
+	restCaller := rest.New(authUrl, httpClient.Do, httpRequestBuilderProvider)
 
 	token := header.CreateAuthorizationToken(authApplicationName, authApplicationPassword)
 
