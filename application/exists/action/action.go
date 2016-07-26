@@ -26,7 +26,7 @@ func New(callRest CallRest, token string) *action {
 func (a *action) Exists(applicationName string) (bool, error) {
 	logger.Debugf("exists application %s", applicationName)
 	var response v1.GetApplicationResponse
-	if err := a.callRest(fmt.Sprintf("/api/v1.0/api/v1.0/application/%s", applicationName), "GET", nil, &response, a.token); err != nil {
+	if err := a.callRest(fmt.Sprintf("/api/v1.0/application/%s", applicationName), "GET", nil, &response, a.token); err != nil {
 		logger.Debugf("exists application %s failed: %v", applicationName, err)
 		return false, err
 	}

@@ -30,7 +30,7 @@ func (a *action) AddGroupToUser(groupName string, userName string) error {
 		GroupName: model.GroupName(groupName),
 	}
 	var response v1.AddUserToGroupResponse
-	if err := a.callRest("/api/v1.0/api/v1.0/user_group", "POST", &request, &response, a.token); err != nil {
+	if err := a.callRest("/api/v1.0/user_group", "POST", &request, &response, a.token); err != nil {
 		logger.Debugf("add user %v to group %v failed: %v", userName, groupName, err)
 		return err
 	}

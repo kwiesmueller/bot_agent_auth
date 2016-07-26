@@ -37,7 +37,7 @@ func (a *action) Remove(authToken string, token string) error {
 		Token:     model.AuthToken(token),
 	}
 	var response v1.AddTokenResponse
-	if err := a.callRest("/api/v1.0/api/v1.0/token", "DELETE", &request, &response, a.token); err != nil {
+	if err := a.callRest("/api/v1.0/token", "DELETE", &request, &response, a.token); err != nil {
 		logger.Debugf("remove token failed: %v", err)
 		return err
 	}
