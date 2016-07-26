@@ -51,7 +51,7 @@ const (
 	DEFAULT_BOT_NAME                    = "auth"
 	PARAMETER_BOT_NAME                  = "bot-name"
 	PARAMETER_ADMIN                     = "admin"
-	PARAMETER_AUTH_ADDRESS              = "auth-address"
+	PARAMETER_AUTH_URL                  = "auth-url"
 	PARAMETER_AUTH_APPLICATION_NAME     = "auth-application-name"
 	PARAMETER_AUTH_APPLICATION_PASSWORD = "auth-application-password"
 	PREFIX                              = "/auth"
@@ -64,7 +64,7 @@ var (
 	nsqLookupdAddressPtr       = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
 	nsqdAddressPtr             = flag.String(PARAMETER_NSQD, "", "nsqd address")
 	botNamePtr                 = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
-	authAddressPtr             = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
+	authUrlPtr                 = flag.String(PARAMETER_AUTH_URL, "", "auth url")
 	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
 	adminAuthTokenPtr          = flag.String(PARAMETER_ADMIN, "", "admin")
@@ -85,7 +85,7 @@ func main() {
 		*nsqdAddressPtr,
 		*nsqLookupdAddressPtr,
 		*botNamePtr,
-		*authAddressPtr,
+		*authUrlPtr,
 		*authApplicationNamePtr,
 		*authApplicationPasswordPtr,
 		*adminAuthTokenPtr,
@@ -103,7 +103,7 @@ func do(
 	nsqdAddress string,
 	nsqLookupdAddress string,
 	botname string,
-	authAddress string,
+	authUrl string,
 	authApplicationName string,
 	authApplicationPassword string,
 	adminAuthToken string,
@@ -114,7 +114,7 @@ func do(
 		nsqdAddress,
 		nsqLookupdAddress,
 		botname,
-		authAddress,
+		authUrl,
 		authApplicationName,
 		authApplicationPassword,
 		adminAuthToken,
@@ -147,7 +147,7 @@ func createRequestConsumer(
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_BOT_NAME)
 	}
 	if len(authAddress) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_ADDRESS)
+		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_URL)
 	}
 	if len(authApplicationName) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_APPLICATION_NAME)
