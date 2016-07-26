@@ -5,7 +5,8 @@ import (
 
 	"fmt"
 
-	"github.com/bborbe/auth/api"
+	"github.com/bborbe/auth/model"
+	"github.com/bborbe/auth/v1"
 )
 
 var logger = log.DefaultLogger
@@ -31,12 +32,12 @@ func (a *action) Add(authToken string, token string) error {
 		return fmt.Errorf("token equals authToken")
 	}
 
-	request := api.AddTokenRequest{
-		AuthToken: api.AuthToken(authToken),
-		Token:     api.AuthToken(token),
+	request := v1.AddTokenRequest{
+		AuthToken: model.AuthToken(authToken),
+		Token:     model.AuthToken(token),
 	}
-	var response api.AddTokenResponse
-	if err := a.callRest("/token", "POST", &request, &response, a.token); err != nil {
+	var response v1.AddTokenResponse
+	if err := a.callRest("/api/v1.0/token", "POST", &request, &response, a.token); err != nil {
 		logger.Debugf("add token failed: %v", err)
 		return err
 	}

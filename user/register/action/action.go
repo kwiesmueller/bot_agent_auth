@@ -5,7 +5,8 @@ import (
 
 	"fmt"
 
-	"github.com/bborbe/auth/api"
+	"github.com/bborbe/auth/model"
+	"github.com/bborbe/auth/v1"
 )
 
 var logger = log.DefaultLogger
@@ -26,12 +27,12 @@ func New(callRest CallRest, token string) *action {
 
 func (a *action) Register(authToken string, userName string) error {
 	logger.Debugf("register user %s with token %s", userName, authToken)
-	request := api.RegisterRequest{
-		AuthToken: api.AuthToken(authToken),
-		UserName:  api.UserName(userName),
+	request := v1.RegisterRequest{
+		AuthToken: model.AuthToken(authToken),
+		UserName:  model.UserName(userName),
 	}
-	var response api.RegisterResponse
-	if err := a.callRest(fmt.Sprintf("/user"), "POST", &request, &response, a.token); err != nil {
+	var response v1.RegisterResponse
+	if err := a.callRest(fmt.Sprintf("/api/v1.0/api/v1.0/user"), "POST", &request, &response, a.token); err != nil {
 		logger.Debugf("register user %s failed: %v", userName, err)
 		return err
 	}

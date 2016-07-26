@@ -3,7 +3,8 @@ package action
 import (
 	"github.com/bborbe/log"
 
-	"github.com/bborbe/auth/api"
+	"github.com/bborbe/auth/model"
+	"github.com/bborbe/auth/v1"
 )
 
 var logger = log.DefaultLogger
@@ -22,13 +23,13 @@ func New(callRest CallRest, token string) *action {
 	return m
 }
 
-func (a *action) Create(applicationName string) (*api.ApplicationPassword, error) {
+func (a *action) Create(applicationName string) (*model.ApplicationPassword, error) {
 	logger.Debugf("create application %s", applicationName)
-	request := api.CreateApplicationRequest{
-		ApplicationName: api.ApplicationName(applicationName),
+	request := v1.CreateApplicationRequest{
+		ApplicationName: model.ApplicationName(applicationName),
 	}
-	var response api.CreateApplicationResponse
-	if err := a.callRest("/application", "POST", &request, &response, a.token); err != nil {
+	var response v1.CreateApplicationResponse
+	if err := a.callRest("/api/v1.0/application", "POST", &request, &response, a.token); err != nil {
 		logger.Debugf("create application %s failed: %v", applicationName, err)
 		return nil, err
 	}

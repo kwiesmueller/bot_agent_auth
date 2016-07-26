@@ -3,7 +3,7 @@ package handler
 import (
 	"fmt"
 
-	auth_api "github.com/bborbe/auth/api"
+	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/response"
@@ -12,7 +12,7 @@ import (
 
 var logger = log.DefaultLogger
 
-type Whoami func(authToken string) (*auth_api.UserName, error)
+type Whoami func(authToken string) (*auth_model.UserName, error)
 
 type handler struct {
 	command command.Command

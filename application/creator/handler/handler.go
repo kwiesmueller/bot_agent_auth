@@ -3,7 +3,7 @@ package handler
 import (
 	"fmt"
 
-	auth_api "github.com/bborbe/auth/api"
+	auth_api "github.com/bborbe/auth/model"
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/matcher"

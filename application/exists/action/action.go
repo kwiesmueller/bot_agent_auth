@@ -1,11 +1,9 @@
 package action
 
 import (
-	"github.com/bborbe/log"
-
 	"fmt"
-
-	"github.com/bborbe/auth/api"
+	"github.com/bborbe/auth/v1"
+	"github.com/bborbe/log"
 )
 
 var logger = log.DefaultLogger
@@ -26,8 +24,8 @@ func New(callRest CallRest, token string) *action {
 
 func (a *action) Exists(applicationName string) (bool, error) {
 	logger.Debugf("exists application %s", applicationName)
-	var response api.GetApplicationResponse
-	if err := a.callRest(fmt.Sprintf("/application/%s", applicationName), "GET", nil, &response, a.token); err != nil {
+	var response v1.GetApplicationResponse
+	if err := a.callRest(fmt.Sprintf("/api/v1.0/api/v1.0/application/%s", applicationName), "GET", nil, &response, a.token); err != nil {
 		logger.Debugf("exists application %s failed: %v", applicationName, err)
 		return false, err
 	}
