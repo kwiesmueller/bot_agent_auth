@@ -29,6 +29,8 @@ import (
 	user_create_handler "github.com/bborbe/bot_agent_auth/user/create/handler"
 	user_delete_action "github.com/bborbe/bot_agent_auth/user/delete/action"
 	user_delete_handler "github.com/bborbe/bot_agent_auth/user/delete/handler"
+	user_list_action "github.com/bborbe/bot_agent_auth/user/list/action"
+	user_list_handler "github.com/bborbe/bot_agent_auth/user/list/handler"
 	user_register_action "github.com/bborbe/bot_agent_auth/user/register/action"
 	user_register_handler "github.com/bborbe/bot_agent_auth/user/register/handler"
 	user_remove_group_action "github.com/bborbe/bot_agent_auth/user/remove_group/action"
@@ -199,6 +201,9 @@ func createRequestConsumer(
 	userRemoveGroupAction := user_remove_group_action.New(restCaller.Call, token)
 	userRemoveGroupHandler := user_remove_group_handler.New(prefix, adminAuthToken, userRemoveGroupAction.RemoveGroupToUser)
 
+	userListAction := user_list_action.New(restCaller.Call, token)
+	userListHandler := user_list_handler.New(prefix, adminAuthToken, userListAction.ListUsers)
+
 	producer, err := producer.New(nsqdAddress)
 	if err != nil {
 		return nil, err
@@ -220,6 +225,7 @@ func createRequestConsumer(
 		tokenRemoveHandler,
 		userAddGroupHandler,
 		userRemoveGroupHandler,
+		userListHandler,
 	)
 
 	tokens := restrict_to_tokens.ParseRestrictToken(restrictToTokens)
