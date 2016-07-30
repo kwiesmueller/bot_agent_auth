@@ -22,7 +22,7 @@ type handler struct {
 
 func New(prefix string, authToken string, addGroupToUser AddGroupToUser) *handler {
 	h := new(handler)
-	h.command = command.New(prefix, "add", "group", "[GROUP]", "to", "user", "[USER]")
+	h.command = command.New(prefix, "group", "[GROUP]", "add", "to", "user", "[USER]")
 	h.authToken = authToken
 	h.addGroupToUser = addGroupToUser
 	return h

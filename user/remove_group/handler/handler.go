@@ -22,7 +22,7 @@ type handler struct {
 
 func New(prefix string, authToken string, removeGroupToUser RemoveGroupToUser) *handler {
 	h := new(handler)
-	h.command = command.New(prefix, "remove", "group", "[GROUP]", "from", "user", "[USER]")
+	h.command = command.New(prefix, "group", "[GROUP]", "remove", "from", "user", "[USER]")
 	h.authToken = authToken
 	h.removeGroupToUser = removeGroupToUser
 	return h
