@@ -1,0 +1,27 @@
+package: github.com/bborbe/bot_agent_auth
+import:
+- package: github.com/bborbe/auth
+  subpackages:
+  - model
+  - v1
+- package: github.com/bborbe/bot_agent
+  subpackages:
+  - api
+  - command
+  - matcher
+  - message_handler/match
+  - message_handler/restrict_to_tokens
+  - producer
+  - request_consumer
+  - response
+  - rest
+  - sender
+- package: github.com/bborbe/flagenv
+- package: github.com/bborbe/http
+  subpackages:
+  - client_builder
+  - header
+  - requestbuilder
+- package: github.com/bborbe/log
+testImport:
+- package: github.com/bborbe/assert
