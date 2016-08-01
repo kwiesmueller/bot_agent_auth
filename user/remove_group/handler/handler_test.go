@@ -21,7 +21,7 @@ func TestImplementsHandler(t *testing.T) {
 func TestMatchTrue(t *testing.T) {
 	c := New("/auth", "", nil)
 	match := c.Match(&api.Request{
-		Message: "/auth remove group admin from user tester",
+		Message: "/auth group admin remove from user tester",
 	})
 	if err := AssertThat(match, Is(true)); err != nil {
 		t.Fatal(err)
@@ -31,7 +31,7 @@ func TestMatchTrue(t *testing.T) {
 func TestMatchFalse(t *testing.T) {
 	c := New("/auth", "", nil)
 	match := c.Match(&api.Request{
-		Message: "/auth remove group admin from user",
+		Message: "/auth group admin remove from user",
 	})
 	if err := AssertThat(match, Is(false)); err != nil {
 		t.Fatal(err)
@@ -56,7 +56,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&api.Request{
-		Message: fmt.Sprintf("/auth remove group %s from user %s", groupName, userName),
+		Message: fmt.Sprintf("/auth group %s remove from user %s", groupName, userName),
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)
@@ -90,7 +90,7 @@ func TestHandleMessageFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&api.Request{
-		Message: fmt.Sprintf("/auth remove group %s from user %s", groupName, userName),
+		Message: fmt.Sprintf("/auth group %s remove from user %s", groupName, userName),
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)
