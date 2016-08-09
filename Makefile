@@ -2,6 +2,9 @@ install:
 	GOBIN=$(GOPATH)/bin GO15VENDOREXPERIMENT=1 go install bin/bot_agent_auth/bot_agent_auth.go
 test:
 	GO15VENDOREXPERIMENT=1 go test `glide novendor`
+check:
+	golint ./...
+	errcheck ./...
 runledis:
 	ledis-server \
 	-addr=localhost:5555 \
@@ -23,6 +26,8 @@ format:
 	find . -name "*.go" -exec gofmt -w "{}" \;
 	goimports -w=true .
 prepare:
+	go get -u github.com/golang/lint/golint
+  go get -u github.com/kisielk/errcheck
 	go get -u golang.org/x/tools/cmd/goimports
 	go get -u github.com/Masterminds/glide
 	go get -u github.com/bborbe/auth/bin/auth_server
