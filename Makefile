@@ -27,7 +27,7 @@ format:
 	goimports -w=true .
 prepare:
 	go get -u github.com/golang/lint/golint
-  go get -u github.com/kisielk/errcheck
+	go get -u github.com/kisielk/errcheck
 	go get -u golang.org/x/tools/cmd/goimports
 	go get -u github.com/Masterminds/glide
 	go get -u github.com/bborbe/auth/bin/auth_server
