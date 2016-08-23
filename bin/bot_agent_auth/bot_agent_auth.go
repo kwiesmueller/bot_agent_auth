@@ -9,7 +9,6 @@ import (
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/message_handler/match"
 	"github.com/bborbe/bot_agent/message_handler/restrict_to_tokens"
-	"github.com/bborbe/bot_agent/producer"
 	"github.com/bborbe/bot_agent/request_consumer"
 	"github.com/bborbe/bot_agent/rest"
 	"github.com/bborbe/bot_agent/sender"
@@ -44,6 +43,8 @@ import (
 	"github.com/bborbe/http/header"
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
 	"github.com/bborbe/log"
+	"github.com/bborbe/nsq_utils"
+	"github.com/bborbe/nsq_utils/producer"
 )
 
 const (
@@ -84,8 +85,8 @@ func main() {
 
 	err := do(
 		PREFIX,
-		*nsqdAddressPtr,
-		*nsqLookupdAddressPtr,
+		nsq_utils.NsqdAddress(*nsqdAddressPtr),
+		nsq_utils.NsqLookupdAddress(*nsqLookupdAddressPtr),
 		*botNamePtr,
 		*authUrlPtr,
 		*authApplicationNamePtr,
@@ -102,8 +103,8 @@ func main() {
 
 func do(
 	prefix string,
-	nsqdAddress string,
-	nsqLookupdAddress string,
+	nsqdAddress nsq_utils.NsqdAddress,
+	nsqLookupdAddress nsq_utils.NsqLookupdAddress,
 	botname string,
 	authUrl string,
 	authApplicationName string,
@@ -130,8 +131,8 @@ func do(
 
 func createRequestConsumer(
 	prefix string,
-	nsqdAddress string,
-	nsqLookupdAddress string,
+	nsqdAddress nsq_utils.NsqdAddress,
+	nsqLookupdAddress nsq_utils.NsqLookupdAddress,
 	botname string,
 	authUrl string,
 	authApplicationName string,
@@ -236,5 +237,5 @@ func createRequestConsumer(
 		)
 	}
 
-	return request_consumer.New(sender.Send, nsqdAddress, nsqLookupdAddress, botname, messageHandler), nil
+	return request_consumer.New(sender.Send, nsqdAddress, nsqLookupdAddress, nsq_utils.NsqChannel(botname), messageHandler), nil
 }
