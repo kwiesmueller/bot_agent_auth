@@ -23,5 +23,6 @@ import:
   - header
   - requestbuilder
 - package: github.com/bborbe/log
+- package: github.com/bborbe/nsq_utils
 testImport:
 - package: github.com/bborbe/assert
