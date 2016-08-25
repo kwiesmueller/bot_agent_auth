@@ -159,7 +159,7 @@ func createRequestConsumer(
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_APPLICATION_PASSWORD)
 	}
 
-	httpRequestBuilderProvider := http_requestbuilder.NewHttpRequestBuilderProvider()
+	httpRequestBuilderProvider := http_requestbuilder.NewHTTPRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
 
 	restCaller := rest.New(authUrl, httpClient.Do, httpRequestBuilderProvider)
