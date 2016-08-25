@@ -11,7 +11,6 @@ import:
   - matcher
   - message_handler/match
   - message_handler/restrict_to_tokens
-  - producer
   - request_consumer
   - response
   - rest
@@ -24,5 +23,7 @@ import:
   - requestbuilder
 - package: github.com/bborbe/log
 - package: github.com/bborbe/nsq_utils
+  subpackages:
+  - producer
 testImport:
 - package: github.com/bborbe/assert
