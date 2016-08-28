@@ -8,7 +8,15 @@ import (
 	. "github.com/bborbe/assert"
 	"github.com/bborbe/bot_agent/api"
 	h "github.com/bborbe/bot_agent/message_handler/match"
+	"github.com/golang/glog"
+	"os"
 )
+
+func TestMain(m *testing.M) {
+	exit := m.Run()
+	glog.Flush()
+	os.Exit(exit)
+}
 
 func TestImplementsHandler(t *testing.T) {
 	c := New("", "", nil)
@@ -53,7 +61,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 	}
 	responses, err := c.HandleMessage(&api.Request{
 		Message:   "/auth user delete tester",
-		AuthToken: username,
+		AuthToken: api.AuthToken(username),
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)
@@ -84,7 +92,7 @@ func TestHandleMessageFailure(t *testing.T) {
 	}
 	responses, err := c.HandleMessage(&api.Request{
 		Message:   "/auth user delete tester",
-		AuthToken: username,
+		AuthToken: api.AuthToken(username),
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)

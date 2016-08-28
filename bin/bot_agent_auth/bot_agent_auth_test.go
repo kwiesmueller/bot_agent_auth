@@ -4,7 +4,15 @@ import (
 	"testing"
 
 	. "github.com/bborbe/assert"
+	"github.com/golang/glog"
+	"os"
 )
+
+func TestMain(m *testing.M) {
+	exit := m.Run()
+	glog.Flush()
+	os.Exit(exit)
+}
 
 func TestCreateRequestConsumer(t *testing.T) {
 	createRequestConsumer, err := createRequestConsumer("prefix", "nsqd", "nsqlookupd", "testbot", "auth-api", "auth-app-name", "auth-app-pw", "asdfasdf", "")

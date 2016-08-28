@@ -6,20 +6,18 @@ import (
 	"github.com/bborbe/bot_agent/matcher"
 	"github.com/bborbe/bot_agent/response"
 	"github.com/bborbe/http/header"
-	"github.com/bborbe/log"
+	"github.com/golang/glog"
 )
 
-var logger = log.DefaultLogger
-
-type Create func(userName string, authToken string) error
+type Create func(userName string, authToken api.AuthToken) error
 
 type handler struct {
 	command   command.Command
-	authToken string
+	authToken api.AuthToken
 	create    Create
 }
 
-func New(prefix string, authToken string, create Create) *handler {
+func New(prefix string, authToken api.AuthToken, create Create) *handler {
 	h := new(handler)
 	h.command = command.New(prefix, "user", "create", "[USERNAME]", "[PASSWORD]")
 	h.authToken = authToken
@@ -36,7 +34,7 @@ func (h *handler) Help(request *api.Request) []string {
 }
 
 func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
-	logger.Debugf("handle message: %s", request.Message)
+	glog.V(2).Infof("handle message: %s", request.Message)
 	userName, err := h.command.Parameter(request, "[USERNAME]")
 	if err != nil {
 		return nil, err
@@ -45,12 +43,12 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	authToken := header.CreateAuthorizationToken(userName, password)
-	logger.Debugf("create user %s", userName)
+	authToken := api.AuthToken(header.CreateAuthorizationToken(userName, password))
+	glog.V(2).Infof("create user %s", userName)
 	if err := h.create(userName, authToken); err != nil {
-		logger.Debugf("create %s failed: %v", userName, err)
+		glog.V(2).Infof("create %s failed: %v", userName, err)
 		return response.CreateReponseMessage("create failed"), nil
 	}
-	logger.Debugf("user %s  created => send success message", userName)
+	glog.V(2).Infof("user %s  created => send success message", userName)
 	return response.CreateReponseMessage("create user completed"), nil
 }

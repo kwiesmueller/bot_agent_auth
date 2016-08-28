@@ -1,32 +1,31 @@
 package action
 
 import (
-	"github.com/bborbe/log"
+	"github.com/golang/glog"
 
 	"fmt"
+	"github.com/bborbe/bot_agent/api"
 
 	"github.com/bborbe/auth/model"
 	"github.com/bborbe/auth/v1"
 )
 
-var logger = log.DefaultLogger
-
-type CallRest func(path string, method string, request interface{}, response interface{}, token string) error
+type CallRest func(path string, method string, request interface{}, response interface{}, token api.AuthToken) error
 
 type action struct {
 	callRest CallRest
-	token    string
+	token    api.AuthToken
 }
 
-func New(callRest CallRest, token string) *action {
+func New(callRest CallRest, token api.AuthToken) *action {
 	m := new(action)
 	m.callRest = callRest
 	m.token = token
 	return m
 }
 
-func (a *action) Add(authToken string, token string) error {
-	logger.Debugf("add token %s to user with token %s", token, authToken)
+func (a *action) Add(authToken api.AuthToken, token api.AuthToken) error {
+	glog.V(2).Infof("add token %s to user with token %s", token, authToken)
 
 	if authToken == token {
 		return fmt.Errorf("token equals authToken")
@@ -38,9 +37,9 @@ func (a *action) Add(authToken string, token string) error {
 	}
 	var response v1.AddTokenResponse
 	if err := a.callRest("/api/1.0/token", "POST", &request, &response, a.token); err != nil {
-		logger.Debugf("add token failed: %v", err)
+		glog.V(2).Infof("add token failed: %v", err)
 		return err
 	}
-	logger.Debugf("add token successful")
+	glog.V(2).Infof("add token successful")
 	return nil
 }

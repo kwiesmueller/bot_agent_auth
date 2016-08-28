@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
-
 	"runtime"
 
 	"github.com/bborbe/bot_agent/api"
@@ -42,13 +40,12 @@ import (
 	http_client_builder "github.com/bborbe/http/client_builder"
 	"github.com/bborbe/http/header"
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
-	"github.com/bborbe/log"
 	"github.com/bborbe/nsq_utils"
 	"github.com/bborbe/nsq_utils/producer"
+	"github.com/golang/glog"
 )
 
 const (
-	PARAMETER_LOGLEVEL                  = "loglevel"
 	PARAMETER_NSQ_LOOKUPD               = "nsq-lookupd-address"
 	PARAMETER_NSQD                      = "nsqd-address"
 	DEFAULT_BOT_NAME                    = "auth"
@@ -62,8 +59,6 @@ const (
 )
 
 var (
-	logger                     = log.DefaultLogger
-	logLevelPtr                = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, log.FLAG_USAGE)
 	nsqLookupdAddressPtr       = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
 	nsqdAddressPtr             = flag.String(PARAMETER_NSQD, "", "nsqd address")
 	botNamePtr                 = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
@@ -75,11 +70,9 @@ var (
 )
 
 func main() {
-	defer logger.Close()
+	defer glog.Flush()
+	glog.CopyStandardLogTo("info")
 	flag.Parse()
-
-	logger.SetLevelThreshold(log.LogStringToLevel(*logLevelPtr))
-	logger.Debugf("set log level to %s", *logLevelPtr)
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -91,13 +84,11 @@ func main() {
 		*authUrlPtr,
 		*authApplicationNamePtr,
 		*authApplicationPasswordPtr,
-		*adminAuthTokenPtr,
+		api.AuthToken(*adminAuthTokenPtr),
 		*restrictToTokensPtr,
 	)
 	if err != nil {
-		logger.Fatal(err)
-		logger.Close()
-		os.Exit(1)
+		glog.Exit(err)
 	}
 }
 
@@ -109,7 +100,7 @@ func do(
 	authUrl string,
 	authApplicationName string,
 	authApplicationPassword string,
-	adminAuthToken string,
+	adminAuthToken api.AuthToken,
 	restrictToTokens string,
 ) error {
 	requestConsumer, err := createRequestConsumer(
@@ -137,7 +128,7 @@ func createRequestConsumer(
 	authUrl string,
 	authApplicationName string,
 	authApplicationPassword string,
-	adminAuthToken string,
+	adminAuthToken api.AuthToken,
 	restrictToTokens string,
 ) (request_consumer.RequestConsumer, error) {
 	if len(nsqLookupdAddress) == 0 {
@@ -164,7 +155,7 @@ func createRequestConsumer(
 
 	restCaller := rest.New(authUrl, httpClient.Do, httpRequestBuilderProvider)
 
-	token := header.CreateAuthorizationToken(authApplicationName, authApplicationPassword)
+	token := api.AuthToken(header.CreateAuthorizationToken(authApplicationName, authApplicationPassword))
 
 	applicationCreatorAction := application_creator_action.New(restCaller.Call, token)
 	applicationCreatorHandler := application_creator_handler.New(prefix, adminAuthToken, applicationCreatorAction.Create)

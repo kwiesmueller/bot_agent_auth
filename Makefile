@@ -22,11 +22,14 @@ runauth:
 	-auth-application-password=test123
 run:
 	bot_agent_auth \
-	-loglevel=debug \
-	-port=7777 \
-	-ledisdb-address=localhost:5555 \
-	-prefix "/wiki" \
-	-root "./files"
+	-logtostderr \
+	-v=2 \
+	-bot-name=merge-bot \
+	-nsqd-address=localhost:4150 \
+	-nsq-lookupd-address=localhost:4161 \
+	-auth-url="http://localhost:6666/auth" \
+	-auth-application-name="auth" \
+	-auth-application-password="test123"
 format:
 	find . -name "*.go" -exec gofmt -w "{}" \;
 	goimports -w=true .

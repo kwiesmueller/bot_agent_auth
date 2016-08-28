@@ -35,7 +35,7 @@ imports:
   version: b820f8cb162c3389b0d47c5435cf395c8b9fb3ee
   subpackages:
   - buffered_writer
-- name: github.com/bborbe/log
+- name: github.com/golang/glog
   version: 9ae9cab3e22cfa1ced54e9d8699c7abd294c9533
 - name: github.com/bborbe/nsq_utils
   version: 8edab3cc14176c13afed298706c71be5be434a53

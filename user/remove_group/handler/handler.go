@@ -7,20 +7,18 @@ import (
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/matcher"
 	"github.com/bborbe/bot_agent/response"
-	"github.com/bborbe/log"
+	"github.com/golang/glog"
 )
-
-var logger = log.DefaultLogger
 
 type RemoveGroupToUser func(groupName string, userName string) error
 
 type handler struct {
 	command           command.Command
-	authToken         string
+	authToken         api.AuthToken
 	removeGroupToUser RemoveGroupToUser
 }
 
-func New(prefix string, authToken string, removeGroupToUser RemoveGroupToUser) *handler {
+func New(prefix string, authToken api.AuthToken, removeGroupToUser RemoveGroupToUser) *handler {
 	h := new(handler)
 	h.command = command.New(prefix, "group", "[GROUP]", "remove", "from", "user", "[USER]")
 	h.authToken = authToken
@@ -40,7 +38,7 @@ func (h *handler) Help(request *api.Request) []string {
 }
 
 func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
-	logger.Debugf("handle message: %s", request.Message)
+	glog.V(2).Infof("handle message: %s", request.Message)
 	groupName, err := h.command.Parameter(request, "[GROUP]")
 	if err != nil {
 		return nil, err
@@ -49,11 +47,11 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	logger.Debugf("remove group %s to user %s", groupName, userName)
+	glog.V(2).Infof("remove group %s to user %s", groupName, userName)
 	if err := h.removeGroupToUser(groupName, userName); err != nil {
-		logger.Debugf("remove group %s to user %s failed: %v", groupName, userName, err)
+		glog.V(2).Infof("remove group %s to user %s failed: %v", groupName, userName, err)
 		return response.CreateReponseMessage(fmt.Sprintf("remove group %s from user %s failed", groupName, userName)), nil
 	}
-	logger.Debugf("removed group %s to user %s successful", groupName, userName)
+	glog.V(2).Infof("removed group %s to user %s successful", groupName, userName)
 	return response.CreateReponseMessage(fmt.Sprintf("group %s removed from user %s", groupName, userName)), nil
 }

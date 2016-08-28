@@ -7,12 +7,10 @@ import (
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/response"
-	"github.com/bborbe/log"
+	"github.com/golang/glog"
 )
 
-var logger = log.DefaultLogger
-
-type Whoami func(authToken string) (*auth_model.UserName, error)
+type Whoami func(authToken api.AuthToken) (*auth_model.UserName, error)
 
 type handler struct {
 	command command.Command
@@ -38,12 +36,12 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	userName, err := h.whoami(request.AuthToken)
 	var name string
 	if err != nil {
-		logger.Debugf("get whoami failed: %v", err)
+		glog.V(2).Infof("get whoami failed: %v", err)
 		name = "-"
 	} else {
 		name = string(*userName)
 	}
-	logger.Debugf("application whoamid => send success message")
+	glog.V(2).Infof("application whoamid => send success message")
 	return response.CreateReponseMessage(
 		fmt.Sprintf("UserToken %s", request.AuthToken),
 		fmt.Sprintf("UserName: %s", name),

@@ -7,20 +7,18 @@ import (
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/matcher"
 	"github.com/bborbe/bot_agent/response"
-	"github.com/bborbe/log"
+	"github.com/golang/glog"
 )
-
-var logger = log.DefaultLogger
 
 type DeleteApplication func(applicationName string) error
 
 type handler struct {
 	command           command.Command
-	authToken         string
+	authToken         api.AuthToken
 	deleteApplication DeleteApplication
 }
 
-func New(prefix string, authToken string, deleteApplication DeleteApplication) *handler {
+func New(prefix string, authToken api.AuthToken, deleteApplication DeleteApplication) *handler {
 	h := new(handler)
 	h.command = command.New(prefix, "application", "delete", "[NAME]")
 	h.authToken = authToken
@@ -44,7 +42,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	logger.Debugf("delete applcation %s", applicationName)
+	glog.V(2).Infof("delete applcation %s", applicationName)
 	if err := h.deleteApplication(applicationName); err != nil {
 		return response.CreateReponseMessage(fmt.Sprintf("delete application %s failed", applicationName)), nil
 	}

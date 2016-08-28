@@ -7,20 +7,18 @@ import (
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/matcher"
 	"github.com/bborbe/bot_agent/response"
-	"github.com/bborbe/log"
+	"github.com/golang/glog"
 )
-
-var logger = log.DefaultLogger
 
 type ExistsApplication func(applicationName string) (bool, error)
 
 type handler struct {
 	command           command.Command
-	authToken         string
+	authToken         api.AuthToken
 	existsApplication ExistsApplication
 }
 
-func New(prefix string, authToken string, existsApplication ExistsApplication) *handler {
+func New(prefix string, authToken api.AuthToken, existsApplication ExistsApplication) *handler {
 	h := new(handler)
 	h.command = command.New(prefix, "application", "exists", "[NAME]")
 	h.authToken = authToken
@@ -46,10 +44,10 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	}
 	exists, err := h.existsApplication(applicationName)
 	if err != nil {
-		logger.Debugf("application exists failed => send failure message: %v", err)
+		glog.V(2).Infof("application exists failed => send failure message: %v", err)
 		return response.CreateReponseMessage(fmt.Sprintf("exists application %s failed", applicationName)), nil
 	}
-	logger.Debugf("application exists => send success message")
+	glog.V(2).Infof("application exists => send success message")
 	if exists {
 		return response.CreateReponseMessage(fmt.Sprintf("application %s exists", applicationName)), nil
 	} else {

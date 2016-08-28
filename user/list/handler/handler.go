@@ -6,20 +6,18 @@ import (
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/matcher"
 	"github.com/bborbe/bot_agent/response"
-	"github.com/bborbe/log"
+	"github.com/golang/glog"
 )
-
-var logger = log.DefaultLogger
 
 type ListUsers func() ([]auth_model.UserName, error)
 
 type handler struct {
 	command   command.Command
-	authToken string
+	authToken api.AuthToken
 	listUsers ListUsers
 }
 
-func New(prefix string, authToken string, list ListUsers) *handler {
+func New(prefix string, authToken api.AuthToken, list ListUsers) *handler {
 	h := new(handler)
 	h.command = command.New(prefix, "user", "list")
 	h.authToken = authToken
@@ -37,9 +35,9 @@ func (h *handler) Help(request *api.Request) []string {
 
 func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	userNames, err := h.listUsers()
-	logger.Debugf("user list => send success message")
+	glog.V(2).Infof("user list => send success message")
 	if err != nil {
-		logger.Debugf("list user failed: %v", err)
+		glog.V(2).Infof("list user failed: %v", err)
 		return response.CreateReponseMessage("list user failed"), nil
 	}
 	var results []string

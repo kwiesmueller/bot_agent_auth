@@ -2,21 +2,19 @@ package action
 
 import (
 	auth_model "github.com/bborbe/auth/model"
-	"github.com/bborbe/log"
-
 	"github.com/bborbe/auth/v1"
+	"github.com/bborbe/bot_agent/api"
+	"github.com/golang/glog"
 )
 
-var logger = log.DefaultLogger
-
-type CallRest func(path string, method string, request interface{}, response interface{}, token string) error
+type CallRest func(path string, method string, request interface{}, response interface{}, token api.AuthToken) error
 
 type action struct {
 	callRest CallRest
-	token    string
+	token    api.AuthToken
 }
 
-func New(callRest CallRest, token string) *action {
+func New(callRest CallRest, token api.AuthToken) *action {
 	m := new(action)
 	m.callRest = callRest
 	m.token = token
@@ -24,14 +22,14 @@ func New(callRest CallRest, token string) *action {
 }
 
 func (a *action) ListUsers() ([]auth_model.UserName, error) {
-	logger.Debugf("list users")
+	glog.V(2).Infof("list users")
 	request := v1.UserListRequest{}
 	var response v1.UserListResponse
 	if err := a.callRest("/api/1.0/user", "GET", &request, &response, a.token); err != nil {
-		logger.Debugf("list user failed: %v", err)
+		glog.V(2).Infof("list user failed: %v", err)
 		return nil, err
 	}
-	logger.Debugf("list user successful")
+	glog.V(2).Infof("list user successful")
 
 	var result []auth_model.UserName
 	for _, user := range response {

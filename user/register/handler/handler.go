@@ -4,12 +4,10 @@ import (
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/response"
-	"github.com/bborbe/log"
+	"github.com/golang/glog"
 )
 
-var logger = log.DefaultLogger
-
-type Register func(authToken string, userName string) error
+type Register func(authToken api.AuthToken, userName string) error
 
 type handler struct {
 	command  command.Command
@@ -32,16 +30,16 @@ func (h *handler) Help(request *api.Request) []string {
 }
 
 func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
-	logger.Debugf("handle message: %s", request.Message)
+	glog.V(2).Infof("handle message: %s", request.Message)
 	userName, err := h.command.Parameter(request, "[NAME]")
 	if err != nil {
 		return nil, err
 	}
-	logger.Debugf("register user %s", userName)
+	glog.V(2).Infof("register user %s", userName)
 	if err := h.register(request.AuthToken, userName); err != nil {
-		logger.Debugf("register %s failed: %v", userName, err)
+		glog.V(2).Infof("register %s failed: %v", userName, err)
 		return response.CreateReponseMessage("register failed"), nil
 	}
-	logger.Debugf("user %s  registered => send success message", userName)
+	glog.V(2).Infof("user %s  registered => send success message", userName)
 	return response.CreateReponseMessage("registration completed"), nil
 }

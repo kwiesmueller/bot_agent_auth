@@ -4,12 +4,10 @@ import (
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/response"
-	"github.com/bborbe/log"
+	"github.com/golang/glog"
 )
 
-var logger = log.DefaultLogger
-
-type Unregister func(authToken string) error
+type Unregister func(authToken api.AuthToken) error
 
 type handler struct {
 	command    command.Command
@@ -32,11 +30,11 @@ func (h *handler) Help(request *api.Request) []string {
 }
 
 func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
-	logger.Debugf("unregister user with token %s", request.AuthToken)
+	glog.V(2).Infof("unregister user with token %s", request.AuthToken)
 	if err := h.unregister(request.AuthToken); err != nil {
-		logger.Debugf("unregister user with token %s failed: %v", request.AuthToken, err)
+		glog.V(2).Infof("unregister user with token %s failed: %v", request.AuthToken, err)
 		return response.CreateReponseMessage("unregister failed"), nil
 	}
-	logger.Debugf("unregister user with token %s successful", request.AuthToken)
+	glog.V(2).Infof("unregister user with token %s successful", request.AuthToken)
 	return response.CreateReponseMessage("unregistration completed"), nil
 }

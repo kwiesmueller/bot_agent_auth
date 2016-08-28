@@ -9,7 +9,15 @@ import (
 	"github.com/bborbe/bot_agent/api"
 	h "github.com/bborbe/bot_agent/message_handler/match"
 	"github.com/bborbe/http/header"
+	"github.com/golang/glog"
+	"os"
 )
+
+func TestMain(m *testing.M) {
+	exit := m.Run()
+	glog.Flush()
+	os.Exit(exit)
+}
 
 func TestImplementsHandler(t *testing.T) {
 	c := New("", "", nil)
@@ -42,9 +50,9 @@ func TestMatchFalse(t *testing.T) {
 func TestHandleMessageSuccess(t *testing.T) {
 	userName := "testuser"
 	password := "abc"
-	authToken := header.CreateAuthorizationToken(userName, password)
+	authToken := api.AuthToken(header.CreateAuthorizationToken(userName, password))
 	counter := 0
-	c := New("/auth", "", func(_userName string, _authToken string) error {
+	c := New("/auth", "", func(_userName string, _authToken api.AuthToken) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}
@@ -78,9 +86,9 @@ func TestHandleMessageSuccess(t *testing.T) {
 func TestHandleMessageFailure(t *testing.T) {
 	userName := "testuser"
 	password := "abc"
-	authToken := header.CreateAuthorizationToken(userName, password)
+	authToken := api.AuthToken(header.CreateAuthorizationToken(userName, password))
 	counter := 0
-	c := New("/auth", "", func(_userName string, _authToken string) error {
+	c := New("/auth", "", func(_userName string, _authToken api.AuthToken) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}

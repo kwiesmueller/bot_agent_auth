@@ -5,7 +5,15 @@ import (
 
 	. "github.com/bborbe/assert"
 	h "github.com/bborbe/bot_agent/message_handler/match"
+	"github.com/golang/glog"
+	"os"
 )
+
+func TestMain(m *testing.M) {
+	exit := m.Run()
+	glog.Flush()
+	os.Exit(exit)
+}
 
 func TestImplementsHandler(t *testing.T) {
 	c := New("", nil)

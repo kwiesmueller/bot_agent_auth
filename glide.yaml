@@ -21,7 +21,7 @@ import:
   - client_builder
   - header
   - requestbuilder
-- package: github.com/bborbe/log
+- package: github.com/golang/glog
 - package: github.com/bborbe/nsq_utils
   subpackages:
   - producer
