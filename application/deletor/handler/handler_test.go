@@ -3,10 +3,11 @@ package handler
 import (
 	"testing"
 
+	"os"
+
 	. "github.com/bborbe/assert"
 	h "github.com/bborbe/bot_agent/message_handler/match"
 	"github.com/golang/glog"
-	"os"
 )
 
 func TestMain(m *testing.M) {
