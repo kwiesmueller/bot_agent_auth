@@ -40,6 +40,7 @@ import (
 	http_client_builder "github.com/bborbe/http/client_builder"
 	"github.com/bborbe/http/header"
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
+	http_rest "github.com/bborbe/http/rest"
 	"github.com/bborbe/nsq_utils"
 	"github.com/bborbe/nsq_utils/producer"
 	"github.com/golang/glog"
@@ -153,7 +154,7 @@ func createRequestConsumer(
 	httpRequestBuilderProvider := http_requestbuilder.NewHTTPRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
 
-	restCaller := rest.New(authUrl, httpClient.Do, httpRequestBuilderProvider)
+	restCaller := rest.New(http_rest.New(httpClient.Do, httpRequestBuilderProvider).Call, authUrl)
 
 	token := api.AuthToken(header.CreateAuthorizationToken(authApplicationName, authApplicationPassword))
 

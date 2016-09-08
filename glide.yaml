@@ -21,6 +21,7 @@ import:
   - client_builder
   - header
   - requestbuilder
+  - rest
 - package: github.com/bborbe/nsq_utils
   subpackages:
   - producer

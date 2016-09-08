@@ -1,42 +1,43 @@
-hash: c5774e15285337a11f4e3bef575f6ef262b8f2241825cfea6a277ac5463ce408
-updated: 2016-08-29T00:10:22.988748512+02:00
+hash: 81315606e6d8147c4502f62a9b5e73537f45b9f70d7155b935d6062f5e29a896
+updated: 2016-09-08T15:35:39.307795346+02:00
 imports:
 - name: github.com/bborbe/auth
-  version: eb7881e6eae03abd3f793f4ae61837abf501edd8
+  version: d143f6bbd0c73c39d4e6426dc7d8ce415f433caa
   subpackages:
   - model
   - v1
 - name: github.com/bborbe/bot_agent
-  version: d05cd9c2cd171308a2eca511ec1508eef0115499
+  version: 899b27409ece76fab41431bdaa6d9f18f5257dde
   subpackages:
   - api
   - command
   - matcher
   - message_handler/match
+  - message_handler/relay
+  - message_handler/restrict
   - message_handler/restrict_to_tokens
+  - pong
   - request_consumer
   - response
   - rest
   - sender
   - ticket
-  - message_handler/restrict
-  - message_handler/relay
-  - pong
   - topic
 - name: github.com/bborbe/flagenv
-  version: ddf8de6851137e93b8384e2c3a30995ac830f56a
+  version: 96aab95bb1341e7a7ccf9160e49792e2ad3b0e08
 - name: github.com/bborbe/http
-  version: 610817d35e311dab1adfecb8b048aa019736a58e
+  version: 356ba8175de4264aedb8337322827961b7c3e927
   subpackages:
   - client_builder
   - header
   - requestbuilder
+  - rest
 - name: github.com/bborbe/nsq_utils
-  version: 4b3ec0abb50d770d83e6d300ac53f153c440bdf6
+  version: 8109cabe90190cd4e36d6d556ed8bd7445b3907a
   subpackages:
-  - producer
   - consumer
   - logger
+  - producer
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
 - name: github.com/mreiferson/go-snappystream
@@ -49,4 +50,4 @@ imports:
   version: 179d4d0c4d8d407a32af483c2354df1d2c91e6c3
 testImports:
 - name: github.com/bborbe/assert
-  version: 639eac9a24e3c01472758f3c79452b8517bc29f6
+  version: 2db035a4c0870f6f48d1955f7b9542f9dbd4fb64
