@@ -23,7 +23,7 @@ func New(callRest CallRest, token api.AuthToken) *action {
 
 func (a *action) Delete(applicationName string) error {
 	glog.V(2).Infof("delete application %s", applicationName)
-	if err := a.callRest(fmt.Sprintf("/application/%s", applicationName), "DELETE", nil, nil, a.token); err != nil {
+	if err := a.callRest(fmt.Sprintf("/api/1.0/application/%s", applicationName), "DELETE", nil, nil, a.token); err != nil {
 		glog.V(2).Infof("delete application %s failed: %v", applicationName, err)
 		return err
 	}

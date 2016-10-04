@@ -32,7 +32,7 @@ func (a *action) CreateUser(userName string, authToken api.AuthToken) error {
 		UserName:  model.UserName(userName),
 	}
 	var response v1.RegisterResponse
-	if err := a.callRest(fmt.Sprintf("/user"), "POST", &request, &response, a.token); err != nil {
+	if err := a.callRest(fmt.Sprintf("/api/1.0/user"), "POST", &request, &response, a.token); err != nil {
 		glog.V(2).Infof("create user %s failed: %v", userName, err)
 		return err
 	}

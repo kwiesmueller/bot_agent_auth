@@ -23,7 +23,7 @@ func New(callRest CallRest, token api.AuthToken) *action {
 
 func (a *action) Unregister(authToken api.AuthToken) error {
 	glog.V(2).Infof("unregister user with token %s", authToken)
-	if err := a.callRest(fmt.Sprintf("/token/%s", authToken), "DELETE", nil, nil, a.token); err != nil {
+	if err := a.callRest(fmt.Sprintf("/api/1.0/token/%s", authToken), "DELETE", nil, nil, a.token); err != nil {
 		glog.V(2).Infof("unregister user with token %s failed: %v", authToken, err)
 		return err
 	}

@@ -23,7 +23,7 @@ func New(callRest CallRest, token api.AuthToken) *action {
 
 func (a *action) DeleteUser(username string) error {
 	glog.V(2).Infof("delete user %s", username)
-	if err := a.callRest(fmt.Sprintf("/user/%s", username), "DELETE", nil, nil, a.token); err != nil {
+	if err := a.callRest(fmt.Sprintf("/api/1.0/user/%s", username), "DELETE", nil, nil, a.token); err != nil {
 		glog.V(2).Infof("delete user %s failed: %v", username, err)
 		return err
 	}
