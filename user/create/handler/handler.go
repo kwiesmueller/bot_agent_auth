@@ -1,6 +1,7 @@
 package handler
 
 import (
+	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/matcher"
@@ -9,15 +10,15 @@ import (
 	"github.com/golang/glog"
 )
 
-type Create func(userName string, authToken api.AuthToken) error
+type Create func(userName string, authToken auth_model.AuthToken) error
 
 type handler struct {
 	command   command.Command
-	authToken api.AuthToken
+	authToken auth_model.AuthToken
 	create    Create
 }
 
-func New(prefix string, authToken api.AuthToken, create Create) *handler {
+func New(prefix string, authToken auth_model.AuthToken, create Create) *handler {
 	h := new(handler)
 	h.command = command.New(prefix, "user", "create", "[USERNAME]", "[PASSWORD]")
 	h.authToken = authToken
@@ -43,7 +44,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	authToken := api.AuthToken(header.CreateAuthorizationToken(userName, password))
+	authToken := auth_model.AuthToken(header.CreateAuthorizationToken(userName, password))
 	glog.V(2).Infof("create user %s", userName)
 	if err := h.create(userName, authToken); err != nil {
 		glog.V(2).Infof("create %s failed: %v", userName, err)

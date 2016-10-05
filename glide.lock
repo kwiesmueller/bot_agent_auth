@@ -1,13 +1,13 @@
 hash: 81315606e6d8147c4502f62a9b5e73537f45b9f70d7155b935d6062f5e29a896
-updated: 2016-09-08T15:35:39.307795346+02:00
+updated: 2016-10-05T14:26:39.788758707+02:00
 imports:
 - name: github.com/bborbe/auth
-  version: d143f6bbd0c73c39d4e6426dc7d8ce415f433caa
+  version: 8e85a2cd8fa2850d6d60e45c7408dd56a97d9df5
   subpackages:
   - model
   - v1
 - name: github.com/bborbe/bot_agent
-  version: 899b27409ece76fab41431bdaa6d9f18f5257dde
+  version: b44183975e4ffdc9f42c8685a359fba9ae7f1789
   subpackages:
   - api
   - command
@@ -45,9 +45,9 @@ imports:
   subpackages:
   - snappy-go
 - name: github.com/nsqio/go-nsq
-  version: d71fb89c9e0263aaed89645b0b168e11ccf597b1
+  version: 205b5100ce209a3a69fe9423a21c626ed23351e8
 - name: github.com/nu7hatch/gouuid
   version: 179d4d0c4d8d407a32af483c2354df1d2c91e6c3
 testImports:
 - name: github.com/bborbe/assert
-  version: 2db035a4c0870f6f48d1955f7b9542f9dbd4fb64
+  version: d2b3a7c4c731ac8cc63c6f5a1ea7d401e7547d42

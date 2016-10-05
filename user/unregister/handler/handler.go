@@ -1,13 +1,14 @@
 package handler
 
 import (
+	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/response"
 	"github.com/golang/glog"
 )
 
-type Unregister func(authToken api.AuthToken) error
+type Unregister func(authToken auth_model.AuthToken) error
 
 type handler struct {
 	command    command.Command

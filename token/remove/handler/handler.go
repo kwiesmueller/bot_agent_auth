@@ -1,13 +1,15 @@
 package handler
 
 import (
+	auth_model "github.com/bborbe/auth/model"
+
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/response"
 	"github.com/golang/glog"
 )
 
-type remove func(authToken api.AuthToken, token api.AuthToken) error
+type remove func(authToken auth_model.AuthToken, token auth_model.AuthToken) error
 
 type handler struct {
 	command command.Command
@@ -36,7 +38,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 		return nil, err
 	}
 	glog.V(2).Infof("remove token %s", token)
-	if err := h.remove(request.AuthToken, api.AuthToken(token)); err != nil {
+	if err := h.remove(request.AuthToken, auth_model.AuthToken(token)); err != nil {
 		glog.V(2).Infof("remove token %s failed: %v", token, err)
 		return response.CreateReponseMessage("remove token failed"), nil
 	}

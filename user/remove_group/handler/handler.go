@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	auth_model "github.com/bborbe/auth/model"
 
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
@@ -14,11 +15,11 @@ type RemoveGroupToUser func(groupName string, userName string) error
 
 type handler struct {
 	command           command.Command
-	authToken         api.AuthToken
+	authToken         auth_model.AuthToken
 	removeGroupToUser RemoveGroupToUser
 }
 
-func New(prefix string, authToken api.AuthToken, removeGroupToUser RemoveGroupToUser) *handler {
+func New(prefix string, authToken auth_model.AuthToken, removeGroupToUser RemoveGroupToUser) *handler {
 	h := new(handler)
 	h.command = command.New(prefix, "group", "[GROUP]", "remove", "from", "user", "[USER]")
 	h.authToken = authToken

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	auth_model "github.com/bborbe/auth/model"
 
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
@@ -14,11 +15,11 @@ type DeleteApplication func(applicationName string) error
 
 type handler struct {
 	command           command.Command
-	authToken         api.AuthToken
+	authToken         auth_model.AuthToken
 	deleteApplication DeleteApplication
 }
 
-func New(prefix string, authToken api.AuthToken, deleteApplication DeleteApplication) *handler {
+func New(prefix string, authToken auth_model.AuthToken, deleteApplication DeleteApplication) *handler {
 	h := new(handler)
 	h.command = command.New(prefix, "application", "delete", "[NAME]")
 	h.authToken = authToken

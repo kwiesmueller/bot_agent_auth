@@ -1,6 +1,7 @@
 package handler
 
 import (
+	auth_model "github.com/bborbe/auth/model"
 	"testing"
 
 	"fmt"
@@ -62,7 +63,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 	}
 	responses, err := c.HandleMessage(&api.Request{
 		Message:   "/auth user delete tester",
-		AuthToken: api.AuthToken(username),
+		AuthToken: auth_model.AuthToken(username),
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)
@@ -93,7 +94,7 @@ func TestHandleMessageFailure(t *testing.T) {
 	}
 	responses, err := c.HandleMessage(&api.Request{
 		Message:   "/auth user delete tester",
-		AuthToken: api.AuthToken(username),
+		AuthToken: auth_model.AuthToken(username),
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)

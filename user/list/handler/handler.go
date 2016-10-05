@@ -13,11 +13,11 @@ type ListUsers func() ([]auth_model.UserName, error)
 
 type handler struct {
 	command   command.Command
-	authToken api.AuthToken
+	authToken auth_model.AuthToken
 	listUsers ListUsers
 }
 
-func New(prefix string, authToken api.AuthToken, list ListUsers) *handler {
+func New(prefix string, authToken auth_model.AuthToken, list ListUsers) *handler {
 	h := new(handler)
 	h.command = command.New(prefix, "user", "list")
 	h.authToken = authToken

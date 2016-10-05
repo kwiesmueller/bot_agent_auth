@@ -4,28 +4,27 @@ import (
 	"github.com/golang/glog"
 
 	"fmt"
-
-	"github.com/bborbe/bot_agent/api"
+	auth_model "github.com/bborbe/auth/model"
 
 	"github.com/bborbe/auth/model"
 	"github.com/bborbe/auth/v1"
 )
 
-type CallRest func(path string, method string, request interface{}, response interface{}, token api.AuthToken) error
+type CallRest func(path string, method string, request interface{}, response interface{}, token auth_model.AuthToken) error
 
 type action struct {
 	callRest CallRest
-	token    api.AuthToken
+	token    auth_model.AuthToken
 }
 
-func New(callRest CallRest, token api.AuthToken) *action {
+func New(callRest CallRest, token auth_model.AuthToken) *action {
 	m := new(action)
 	m.callRest = callRest
 	m.token = token
 	return m
 }
 
-func (a *action) CreateUser(userName string, authToken api.AuthToken) error {
+func (a *action) CreateUser(userName string, authToken auth_model.AuthToken) error {
 	glog.V(2).Infof("create user %s with token %s", userName, authToken)
 	request := v1.RegisterRequest{
 		AuthToken: model.AuthToken(authToken),

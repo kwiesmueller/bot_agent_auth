@@ -10,7 +10,7 @@ import (
 	"github.com/golang/glog"
 )
 
-type Whoami func(authToken api.AuthToken) (*auth_model.UserName, error)
+type Whoami func(authToken auth_model.AuthToken) (*auth_model.UserName, error)
 
 type handler struct {
 	command command.Command

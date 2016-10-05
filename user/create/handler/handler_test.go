@@ -5,6 +5,7 @@ import (
 
 	"fmt"
 
+	auth_model "github.com/bborbe/auth/model"
 	"os"
 
 	. "github.com/bborbe/assert"
@@ -51,9 +52,9 @@ func TestMatchFalse(t *testing.T) {
 func TestHandleMessageSuccess(t *testing.T) {
 	userName := "testuser"
 	password := "abc"
-	authToken := api.AuthToken(header.CreateAuthorizationToken(userName, password))
+	authToken := auth_model.AuthToken(header.CreateAuthorizationToken(userName, password))
 	counter := 0
-	c := New("/auth", "", func(_userName string, _authToken api.AuthToken) error {
+	c := New("/auth", "", func(_userName string, _authToken auth_model.AuthToken) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}
@@ -87,9 +88,9 @@ func TestHandleMessageSuccess(t *testing.T) {
 func TestHandleMessageFailure(t *testing.T) {
 	userName := "testuser"
 	password := "abc"
-	authToken := api.AuthToken(header.CreateAuthorizationToken(userName, password))
+	authToken := auth_model.AuthToken(header.CreateAuthorizationToken(userName, password))
 	counter := 0
-	c := New("/auth", "", func(_userName string, _authToken api.AuthToken) error {
+	c := New("/auth", "", func(_userName string, _authToken auth_model.AuthToken) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}

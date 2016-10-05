@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	auth_model "github.com/bborbe/auth/model"
 	"runtime"
 
 	"github.com/bborbe/bot_agent/api"
@@ -85,7 +86,7 @@ func main() {
 		*authUrlPtr,
 		*authApplicationNamePtr,
 		*authApplicationPasswordPtr,
-		api.AuthToken(*adminAuthTokenPtr),
+		auth_model.AuthToken(*adminAuthTokenPtr),
 		*restrictToTokensPtr,
 	)
 	if err != nil {
@@ -101,7 +102,7 @@ func do(
 	authUrl string,
 	authApplicationName string,
 	authApplicationPassword string,
-	adminAuthToken api.AuthToken,
+	adminAuthToken auth_model.AuthToken,
 	restrictToTokens string,
 ) error {
 	requestConsumer, err := createRequestConsumer(
@@ -129,7 +130,7 @@ func createRequestConsumer(
 	authUrl string,
 	authApplicationName string,
 	authApplicationPassword string,
-	adminAuthToken api.AuthToken,
+	adminAuthToken auth_model.AuthToken,
 	restrictToTokens string,
 ) (request_consumer.RequestConsumer, error) {
 	if len(nsqLookupdAddress) == 0 {
@@ -156,7 +157,7 @@ func createRequestConsumer(
 
 	restCaller := rest.New(http_rest.New(httpClient.Do, httpRequestBuilderProvider).Call, authUrl)
 
-	token := api.AuthToken(header.CreateAuthorizationToken(authApplicationName, authApplicationPassword))
+	token := auth_model.AuthToken(header.CreateAuthorizationToken(authApplicationName, authApplicationPassword))
 
 	applicationCreatorAction := application_creator_action.New(restCaller.Call, token)
 	applicationCreatorHandler := application_creator_handler.New(prefix, adminAuthToken, applicationCreatorAction.Create)

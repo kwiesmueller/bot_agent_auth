@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	auth_model "github.com/bborbe/auth/model"
 
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
@@ -14,11 +15,11 @@ type ExistsApplication func(applicationName string) (bool, error)
 
 type handler struct {
 	command           command.Command
-	authToken         api.AuthToken
+	authToken         auth_model.AuthToken
 	existsApplication ExistsApplication
 }
 
-func New(prefix string, authToken api.AuthToken, existsApplication ExistsApplication) *handler {
+func New(prefix string, authToken auth_model.AuthToken, existsApplication ExistsApplication) *handler {
 	h := new(handler)
 	h.command = command.New(prefix, "application", "exists", "[NAME]")
 	h.authToken = authToken

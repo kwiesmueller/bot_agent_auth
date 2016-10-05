@@ -1,6 +1,7 @@
 package handler
 
 import (
+	auth_model "github.com/bborbe/auth/model"
 	"testing"
 
 	"fmt"
@@ -48,10 +49,10 @@ func TestMatchFalse(t *testing.T) {
 }
 
 func TestHandleMessageSuccess(t *testing.T) {
-	authToken := api.AuthToken("abc")
+	authToken := auth_model.AuthToken("abc")
 	userName := "testuser"
 	counter := 0
-	c := New("/auth", func(_authToken api.AuthToken, _userName string) error {
+	c := New("/auth", func(_authToken auth_model.AuthToken, _userName string) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}
@@ -83,10 +84,10 @@ func TestHandleMessageSuccess(t *testing.T) {
 }
 
 func TestHandleMessageFailure(t *testing.T) {
-	authToken := api.AuthToken("abc")
+	authToken := auth_model.AuthToken("abc")
 	userName := "testuser"
 	counter := 0
-	c := New("/auth", func(_authToken api.AuthToken, _userName string) error {
+	c := New("/auth", func(_authToken auth_model.AuthToken, _userName string) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}

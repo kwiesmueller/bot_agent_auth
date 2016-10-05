@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	auth_model "github.com/bborbe/auth/model"
 
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
@@ -14,11 +15,11 @@ type AddGroupToUser func(groupName string, userName string) error
 
 type handler struct {
 	command        command.Command
-	authToken      api.AuthToken
+	authToken      auth_model.AuthToken
 	addGroupToUser AddGroupToUser
 }
 
-func New(prefix string, authToken api.AuthToken, addGroupToUser AddGroupToUser) *handler {
+func New(prefix string, authToken auth_model.AuthToken, addGroupToUser AddGroupToUser) *handler {
 	h := new(handler)
 	h.command = command.New(prefix, "group", "[GROUP]", "add", "to", "user", "[USER]")
 	h.authToken = authToken

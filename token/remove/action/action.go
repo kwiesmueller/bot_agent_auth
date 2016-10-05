@@ -4,27 +4,27 @@ import (
 	"github.com/golang/glog"
 
 	"fmt"
+	auth_model "github.com/bborbe/auth/model"
 
 	"github.com/bborbe/auth/model"
 	"github.com/bborbe/auth/v1"
-	"github.com/bborbe/bot_agent/api"
 )
 
-type CallRest func(path string, method string, request interface{}, response interface{}, token api.AuthToken) error
+type CallRest func(path string, method string, request interface{}, response interface{}, token auth_model.AuthToken) error
 
 type action struct {
 	callRest CallRest
-	token    api.AuthToken
+	token    auth_model.AuthToken
 }
 
-func New(callRest CallRest, token api.AuthToken) *action {
+func New(callRest CallRest, token auth_model.AuthToken) *action {
 	m := new(action)
 	m.callRest = callRest
 	m.token = token
 	return m
 }
 
-func (a *action) Remove(authToken api.AuthToken, token api.AuthToken) error {
+func (a *action) Remove(authToken auth_model.AuthToken, token auth_model.AuthToken) error {
 	glog.V(2).Infof("remove token %s to user with token %s", token, authToken)
 
 	if authToken == token {
