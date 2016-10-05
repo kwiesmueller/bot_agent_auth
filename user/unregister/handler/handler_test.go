@@ -5,8 +5,9 @@ import (
 
 	"fmt"
 
-	auth_model "github.com/bborbe/auth/model"
 	"os"
+
+	auth_model "github.com/bborbe/auth/model"
 
 	. "github.com/bborbe/assert"
 	"github.com/bborbe/bot_agent/api"

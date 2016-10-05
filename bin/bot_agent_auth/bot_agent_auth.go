@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	auth_model "github.com/bborbe/auth/model"
 	"runtime"
+
+	auth_model "github.com/bborbe/auth/model"
 
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/message_handler/match"

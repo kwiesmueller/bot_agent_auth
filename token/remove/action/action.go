@@ -4,6 +4,7 @@ import (
 	"github.com/golang/glog"
 
 	"fmt"
+
 	auth_model "github.com/bborbe/auth/model"
 
 	"github.com/bborbe/auth/model"

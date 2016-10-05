@@ -1,8 +1,9 @@
 package handler
 
 import (
-	auth_model "github.com/bborbe/auth/model"
 	"testing"
+
+	auth_model "github.com/bborbe/auth/model"
 
 	"fmt"
 

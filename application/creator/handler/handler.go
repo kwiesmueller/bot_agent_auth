@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+
 	auth_model "github.com/bborbe/auth/model"
 
 	auth_api "github.com/bborbe/auth/model"
