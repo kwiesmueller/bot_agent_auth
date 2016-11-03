@@ -41,7 +41,6 @@ import (
 	flag "github.com/bborbe/flagenv"
 	http_client_builder "github.com/bborbe/http/client_builder"
 	"github.com/bborbe/http/header"
-	http_requestbuilder "github.com/bborbe/http/requestbuilder"
 	http_rest "github.com/bborbe/http/rest"
 	"github.com/bborbe/nsq_utils"
 	"github.com/bborbe/nsq_utils/producer"
@@ -153,10 +152,10 @@ func createRequestConsumer(
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_APPLICATION_PASSWORD)
 	}
 
-	httpRequestBuilderProvider := http_requestbuilder.NewHTTPRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
+	httpRest := http_rest.New(httpClient.Do)
 
-	restCaller := rest.New(http_rest.New(httpClient.Do, httpRequestBuilderProvider).Call, authUrl)
+	restCaller := rest.New(httpRest.Call, authUrl)
 
 	token := auth_model.AuthToken(header.CreateAuthorizationToken(authApplicationName, authApplicationPassword))
 
