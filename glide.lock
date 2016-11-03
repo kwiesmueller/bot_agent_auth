@@ -1,13 +1,13 @@
 hash: 81315606e6d8147c4502f62a9b5e73537f45b9f70d7155b935d6062f5e29a896
-updated: 2016-10-05T14:26:39.788758707+02:00
+updated: 2016-11-03T22:04:12.714087017+01:00
 imports:
 - name: github.com/bborbe/auth
-  version: 8e85a2cd8fa2850d6d60e45c7408dd56a97d9df5
+  version: c3700eb90791ec5e3d43121437c997e70b699816
   subpackages:
   - model
   - v1
 - name: github.com/bborbe/bot_agent
-  version: b44183975e4ffdc9f42c8685a359fba9ae7f1789
+  version: 41ff500bcf31584cc72211207000123e04e57772
   subpackages:
   - api
   - command
@@ -26,7 +26,7 @@ imports:
 - name: github.com/bborbe/flagenv
   version: 96aab95bb1341e7a7ccf9160e49792e2ad3b0e08
 - name: github.com/bborbe/http
-  version: 356ba8175de4264aedb8337322827961b7c3e927
+  version: 2cd41df2b8ed14e64ffa08ce1e4290abce91dda1
   subpackages:
   - client_builder
   - header
@@ -45,7 +45,7 @@ imports:
   subpackages:
   - snappy-go
 - name: github.com/nsqio/go-nsq
-  version: 205b5100ce209a3a69fe9423a21c626ed23351e8
+  version: 8e6d40fe7f7baa8e0e606bb64f8f9579704d72c4
 - name: github.com/nu7hatch/gouuid
   version: 179d4d0c4d8d407a32af483c2354df1d2c91e6c3
 testImports:
