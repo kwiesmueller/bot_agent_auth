@@ -1,14 +1,12 @@
 package handler
 
 import (
-	auth_model "github.com/bborbe/auth/model"
+	"fmt"
+	"os"
 	"testing"
 
-	"fmt"
-
-	"os"
-
 	. "github.com/bborbe/assert"
+	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/bot_agent/api"
 	h "github.com/bborbe/bot_agent/message_handler/match"
 	"github.com/golang/glog"
@@ -31,7 +29,7 @@ func TestImplementsHandler(t *testing.T) {
 func TestMatchTrue(t *testing.T) {
 	c := New("/auth", "", nil)
 	match := c.Match(&api.Request{
-		Message: "/auth group admin remove from user tester",
+		Message: "/auth group admin add to user tester",
 	})
 	if err := AssertThat(match, Is(true)); err != nil {
 		t.Fatal(err)
@@ -41,7 +39,7 @@ func TestMatchTrue(t *testing.T) {
 func TestMatchFalse(t *testing.T) {
 	c := New("/auth", "", nil)
 	match := c.Match(&api.Request{
-		Message: "/auth group admin remove from user",
+		Message: "/auth group admin add to user",
 	})
 	if err := AssertThat(match, Is(false)); err != nil {
 		t.Fatal(err)
@@ -66,7 +64,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&api.Request{
-		Message: fmt.Sprintf("/auth group %s remove from user %s", groupName, userName),
+		Message: fmt.Sprintf("/auth group %s add to user %s", groupName, userName),
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)
@@ -100,7 +98,7 @@ func TestHandleMessageFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&api.Request{
-		Message: fmt.Sprintf("/auth group %s remove from user %s", groupName, userName),
+		Message: fmt.Sprintf("/auth group %s add to user %s", groupName, userName),
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
 		t.Fatal(err)

@@ -14,27 +14,26 @@ import (
 	"github.com/bborbe/bot_agent/request_consumer"
 	"github.com/bborbe/bot_agent/rest"
 	"github.com/bborbe/bot_agent/sender"
-	application_creator_handler "github.com/bborbe/bot_agent_auth/application/creator/handler"
-	application_deletor_handler "github.com/bborbe/bot_agent_auth/application/deletor/handler"
-	application_exists_handler "github.com/bborbe/bot_agent_auth/application/exists/handler"
 	"github.com/bborbe/bot_agent_auth/model"
-	token_add_handler "github.com/bborbe/bot_agent_auth/token/add/handler"
-	token_remove_handler "github.com/bborbe/bot_agent_auth/token/remove/handler"
-	user_add_group_handler "github.com/bborbe/bot_agent_auth/user/add_group/handler"
-	user_create_handler "github.com/bborbe/bot_agent_auth/user/create/handler"
-	user_delete_handler "github.com/bborbe/bot_agent_auth/user/delete/handler"
-	user_list_handler "github.com/bborbe/bot_agent_auth/user/list/handler"
-	user_register_action "github.com/bborbe/bot_agent_auth/user/register/action"
-	user_register_handler "github.com/bborbe/bot_agent_auth/user/register/handler"
-	user_remove_group_handler "github.com/bborbe/bot_agent_auth/user/remove_group/handler"
-	token_list_handler "github.com/bborbe/bot_agent_auth/user/token_list/handler"
-	user_unregister_action "github.com/bborbe/bot_agent_auth/user/unregister/action"
-	user_unregister_handler "github.com/bborbe/bot_agent_auth/user/unregister/handler"
-	user_whoami_handler "github.com/bborbe/bot_agent_auth/user/whoami/handler"
 	http_client_builder "github.com/bborbe/http/client_builder"
 	"github.com/bborbe/http/header"
 	http_rest "github.com/bborbe/http/rest"
 	"github.com/nsqio/go-nsq"
+
+	application_creator_handler "github.com/bborbe/bot_agent_auth/handler/application_creator"
+	application_deletor_handler "github.com/bborbe/bot_agent_auth/handler/application_deletor"
+	application_exists_handler "github.com/bborbe/bot_agent_auth/handler/application_exists"
+	token_add_handler "github.com/bborbe/bot_agent_auth/handler/token_add"
+	token_remove_handler "github.com/bborbe/bot_agent_auth/handler/token_remove"
+	user_add_group_handler "github.com/bborbe/bot_agent_auth/handler/user_add_group"
+	user_create_handler "github.com/bborbe/bot_agent_auth/handler/user_create"
+	user_delete_handler "github.com/bborbe/bot_agent_auth/handler/user_delete"
+	user_list_handler "github.com/bborbe/bot_agent_auth/handler/user_list"
+	token_list_handler "github.com/bborbe/bot_agent_auth/handler/user_list_token"
+	user_register_handler "github.com/bborbe/bot_agent_auth/handler/user_register"
+	user_remove_group_handler "github.com/bborbe/bot_agent_auth/handler/user_remove_group"
+	user_unregister_handler "github.com/bborbe/bot_agent_auth/handler/user_unregister"
+	user_whoami_handler "github.com/bborbe/bot_agent_auth/handler/user_whoami"
 )
 
 type botAgentAuthfactory struct {
@@ -149,13 +148,11 @@ func (b *botAgentAuthfactory) userWhoamiHandler() match.Handler {
 }
 
 func (b *botAgentAuthfactory) userRegisterHandler() match.Handler {
-	userRegisterAction := user_register_action.New(b.restCaller().Call, b.token())
-	return user_register_handler.New(b.config.Prefix, userRegisterAction.Register)
+	return user_register_handler.New(b.config.Prefix, b.UserService().CreateUserWithToken)
 }
 
 func (b *botAgentAuthfactory) userUnregisterHandler() match.Handler {
-	userUnregisterAction := user_unregister_action.New(b.restCaller().Call, b.token())
-	return user_unregister_handler.New(b.config.Prefix, userUnregisterAction.Unregister)
+	return user_unregister_handler.New(b.config.Prefix, b.UserService().DeleteUserWithToken)
 }
 
 func (b *botAgentAuthfactory) userCreateHandler() match.Handler {

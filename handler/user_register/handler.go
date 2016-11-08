@@ -9,7 +9,7 @@ import (
 	"github.com/golang/glog"
 )
 
-type Register func(authToken auth_model.AuthToken, userName string) error
+type Register func(userName auth_model.UserName, authToken auth_model.AuthToken) error
 
 type handler struct {
 	command  command.Command
@@ -38,7 +38,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 		return nil, err
 	}
 	glog.V(2).Infof("register user %s", userName)
-	if err := h.register(request.AuthToken, userName); err != nil {
+	if err := h.register(auth_model.UserName(userName), request.AuthToken); err != nil {
 		glog.V(2).Infof("register %s failed: %v", userName, err)
 		return response.CreateReponseMessage("register failed"), nil
 	}

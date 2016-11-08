@@ -1,15 +1,18 @@
 package handler
 
 import (
-	"fmt"
-	. "github.com/bborbe/assert"
+	"testing"
+
 	auth_model "github.com/bborbe/auth/model"
+
+	"fmt"
+
+	"os"
+
+	. "github.com/bborbe/assert"
 	"github.com/bborbe/bot_agent/api"
 	h "github.com/bborbe/bot_agent/message_handler/match"
-	"github.com/bborbe/http/header"
 	"github.com/golang/glog"
-	"os"
-	"testing"
 )
 
 func TestMain(m *testing.M) {
@@ -19,7 +22,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestImplementsHandler(t *testing.T) {
-	c := New("", "", nil)
+	c := New("", nil)
 	var i *h.Handler
 	if err := AssertThat(c, Implements(i)); err != nil {
 		t.Fatal(err)
@@ -27,9 +30,9 @@ func TestImplementsHandler(t *testing.T) {
 }
 
 func TestMatchTrue(t *testing.T) {
-	c := New("/auth", "", nil)
+	c := New("/auth", nil)
 	match := c.Match(&api.Request{
-		Message: "/auth user create tester secret",
+		Message: "/auth register bborbe",
 	})
 	if err := AssertThat(match, Is(true)); err != nil {
 		t.Fatal(err)
@@ -37,9 +40,9 @@ func TestMatchTrue(t *testing.T) {
 }
 
 func TestMatchFalse(t *testing.T) {
-	c := New("/auth", "", nil)
+	c := New("/auth", nil)
 	match := c.Match(&api.Request{
-		Message: "/auth user create tester",
+		Message: "/auth register",
 	})
 	if err := AssertThat(match, Is(false)); err != nil {
 		t.Fatal(err)
@@ -47,11 +50,10 @@ func TestMatchFalse(t *testing.T) {
 }
 
 func TestHandleMessageSuccess(t *testing.T) {
+	authToken := auth_model.AuthToken("abc")
 	userName := "testuser"
-	password := "abc"
-	authToken := auth_model.AuthToken(header.CreateAuthorizationToken(userName, password))
 	counter := 0
-	c := New("/auth", "", func(_userName auth_model.UserName, _authToken auth_model.AuthToken) error {
+	c := New("/auth", func(_userName auth_model.UserName, _authToken auth_model.AuthToken) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}
@@ -65,7 +67,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&api.Request{
-		Message:   fmt.Sprintf("/auth user create %s %s", userName, password),
+		Message:   fmt.Sprintf("/auth register %s", userName),
 		AuthToken: authToken,
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
@@ -83,11 +85,10 @@ func TestHandleMessageSuccess(t *testing.T) {
 }
 
 func TestHandleMessageFailure(t *testing.T) {
+	authToken := auth_model.AuthToken("abc")
 	userName := "testuser"
-	password := "abc"
-	authToken := auth_model.AuthToken(header.CreateAuthorizationToken(userName, password))
 	counter := 0
-	c := New("/auth", "", func(_userName auth_model.UserName, _authToken auth_model.AuthToken) error {
+	c := New("/auth", func(_userName auth_model.UserName, _authToken auth_model.AuthToken) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}
@@ -101,7 +102,7 @@ func TestHandleMessageFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&api.Request{
-		Message:   fmt.Sprintf("/auth user create %s %s", userName, password),
+		Message:   fmt.Sprintf("/auth register %s", userName),
 		AuthToken: authToken,
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
