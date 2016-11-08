@@ -9,6 +9,7 @@ import (
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/matcher"
 	"github.com/bborbe/bot_agent/response"
+	"github.com/bborbe/bot_agent_auth/model"
 	"github.com/golang/glog"
 )
 
@@ -20,9 +21,9 @@ type handler struct {
 	deleteApplication DeleteApplication
 }
 
-func New(prefix string, authToken auth_model.AuthToken, deleteApplication DeleteApplication) *handler {
+func New(prefix model.Prefix, authToken auth_model.AuthToken, deleteApplication DeleteApplication) *handler {
 	h := new(handler)
-	h.command = command.New(prefix, "application", "delete", "[NAME]")
+	h.command = command.New(prefix.String(), "application", "delete", "[NAME]")
 	h.authToken = authToken
 	h.deleteApplication = deleteApplication
 	return h

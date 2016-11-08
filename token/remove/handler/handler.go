@@ -6,6 +6,7 @@ import (
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/response"
+	"github.com/bborbe/bot_agent_auth/model"
 	"github.com/golang/glog"
 )
 
@@ -16,9 +17,9 @@ type handler struct {
 	remove  remove
 }
 
-func New(prefix string, remove remove) *handler {
+func New(prefix model.Prefix, remove remove) *handler {
 	h := new(handler)
-	h.command = command.New(prefix, "token", "remove", "[NAME]")
+	h.command = command.New(prefix.String(), "token", "remove", "[NAME]")
 	h.remove = remove
 	return h
 }

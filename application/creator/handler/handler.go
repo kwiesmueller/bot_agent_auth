@@ -10,6 +10,7 @@ import (
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/matcher"
 	"github.com/bborbe/bot_agent/response"
+	"github.com/bborbe/bot_agent_auth/model"
 	"github.com/golang/glog"
 )
 
@@ -21,9 +22,9 @@ type handler struct {
 	createApplication CreateApplication
 }
 
-func New(prefix string, authToken auth_model.AuthToken, createApplication CreateApplication) *handler {
+func New(prefix model.Prefix, authToken auth_model.AuthToken, createApplication CreateApplication) *handler {
 	h := new(handler)
-	h.command = command.New(prefix, "application", "create", "[NAME]")
+	h.command = command.New(prefix.String(), "application", "create", "[NAME]")
 	h.authToken = authToken
 	h.createApplication = createApplication
 	return h

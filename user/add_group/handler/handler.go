@@ -9,6 +9,7 @@ import (
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/matcher"
 	"github.com/bborbe/bot_agent/response"
+	"github.com/bborbe/bot_agent_auth/model"
 	"github.com/golang/glog"
 )
 
@@ -20,9 +21,9 @@ type handler struct {
 	addGroupToUser AddGroupToUser
 }
 
-func New(prefix string, authToken auth_model.AuthToken, addGroupToUser AddGroupToUser) *handler {
+func New(prefix model.Prefix, authToken auth_model.AuthToken, addGroupToUser AddGroupToUser) *handler {
 	h := new(handler)
-	h.command = command.New(prefix, "group", "[GROUP]", "add", "to", "user", "[USER]")
+	h.command = command.New(prefix.String(), "group", "[GROUP]", "add", "to", "user", "[USER]")
 	h.authToken = authToken
 	h.addGroupToUser = addGroupToUser
 	return h

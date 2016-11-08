@@ -7,6 +7,7 @@ import (
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/response"
+	"github.com/bborbe/bot_agent_auth/model"
 	"github.com/golang/glog"
 )
 
@@ -17,9 +18,9 @@ type handler struct {
 	whoami  Whoami
 }
 
-func New(prefix string, whoami Whoami) *handler {
+func New(prefix model.Prefix, whoami Whoami) *handler {
 	h := new(handler)
-	h.command = command.New(prefix, "whoami")
+	h.command = command.New(prefix.String(), "whoami")
 	h.whoami = whoami
 	return h
 }

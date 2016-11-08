@@ -1,234 +1,75 @@
 package main
 
 import (
-	"fmt"
 	"runtime"
 
 	auth_model "github.com/bborbe/auth/model"
-
-	"github.com/bborbe/bot_agent/api"
-	"github.com/bborbe/bot_agent/message_handler/match"
-	"github.com/bborbe/bot_agent/message_handler/restrict_to_tokens"
-	"github.com/bborbe/bot_agent/request_consumer"
-	"github.com/bborbe/bot_agent/rest"
-	"github.com/bborbe/bot_agent/sender"
-	application_creator_action "github.com/bborbe/bot_agent_auth/application/creator/action"
-	application_creator_handler "github.com/bborbe/bot_agent_auth/application/creator/handler"
-	application_deletor_action "github.com/bborbe/bot_agent_auth/application/deletor/action"
-	application_deletor_handler "github.com/bborbe/bot_agent_auth/application/deletor/handler"
-	application_exists_action "github.com/bborbe/bot_agent_auth/application/exists/action"
-	application_exists_handler "github.com/bborbe/bot_agent_auth/application/exists/handler"
-	token_add_action "github.com/bborbe/bot_agent_auth/token/add/action"
-	token_add_handler "github.com/bborbe/bot_agent_auth/token/add/handler"
-	token_remove_action "github.com/bborbe/bot_agent_auth/token/remove/action"
-	token_remove_handler "github.com/bborbe/bot_agent_auth/token/remove/handler"
-	user_add_group_action "github.com/bborbe/bot_agent_auth/user/add_group/action"
-	user_add_group_handler "github.com/bborbe/bot_agent_auth/user/add_group/handler"
-	user_create_action "github.com/bborbe/bot_agent_auth/user/create/action"
-	user_create_handler "github.com/bborbe/bot_agent_auth/user/create/handler"
-	user_delete_action "github.com/bborbe/bot_agent_auth/user/delete/action"
-	user_delete_handler "github.com/bborbe/bot_agent_auth/user/delete/handler"
-	user_list_action "github.com/bborbe/bot_agent_auth/user/list/action"
-	user_list_handler "github.com/bborbe/bot_agent_auth/user/list/handler"
-	user_register_action "github.com/bborbe/bot_agent_auth/user/register/action"
-	user_register_handler "github.com/bborbe/bot_agent_auth/user/register/handler"
-	user_remove_group_action "github.com/bborbe/bot_agent_auth/user/remove_group/action"
-	user_remove_group_handler "github.com/bborbe/bot_agent_auth/user/remove_group/handler"
-	user_unregister_action "github.com/bborbe/bot_agent_auth/user/unregister/action"
-	user_unregister_handler "github.com/bborbe/bot_agent_auth/user/unregister/handler"
-	user_whoami_action "github.com/bborbe/bot_agent_auth/user/whoami/action"
-	user_whoami_handler "github.com/bborbe/bot_agent_auth/user/whoami/handler"
+	"github.com/bborbe/bot_agent_auth/factory"
+	"github.com/bborbe/bot_agent_auth/model"
 	flag "github.com/bborbe/flagenv"
-	http_client_builder "github.com/bborbe/http/client_builder"
-	"github.com/bborbe/http/header"
-	http_rest "github.com/bborbe/http/rest"
 	"github.com/bborbe/nsq_utils"
 	"github.com/bborbe/nsq_utils/producer"
 	"github.com/golang/glog"
 )
 
 const (
-	PARAMETER_NSQ_LOOKUPD               = "nsq-lookupd-address"
-	PARAMETER_NSQD                      = "nsqd-address"
-	DEFAULT_BOT_NAME                    = "auth"
-	PARAMETER_BOT_NAME                  = "bot-name"
-	PARAMETER_ADMIN                     = "admin"
-	PARAMETER_AUTH_URL                  = "auth-url"
-	PARAMETER_AUTH_APPLICATION_NAME     = "auth-application-name"
-	PARAMETER_AUTH_APPLICATION_PASSWORD = "auth-application-password"
-	PREFIX                              = "/auth"
-	PARAMETER_RESTRICT_TO_TOKENS        = "restrict-to-tokens"
+	parameterNsqLookupd              = "nsq-lookupd-address"
+	parameterNsqd                    = "nsqd-address"
+	parameterBotName                 = "bot-name"
+	parameterAdmin                   = "admin"
+	parameterAuthUrl                 = "auth-url"
+	parameterAuthApplicationName     = "auth-application-name"
+	parameterAuthApplicationPassword = "auth-application-password"
+	parameterRestrictToTokens        = "restrict-to-tokens"
+	parameterPrefix                  = "prefix"
 )
 
 var (
-	nsqLookupdAddressPtr       = flag.String(PARAMETER_NSQ_LOOKUPD, "", "nsq lookupd address")
-	nsqdAddressPtr             = flag.String(PARAMETER_NSQD, "", "nsqd address")
-	botNamePtr                 = flag.String(PARAMETER_BOT_NAME, DEFAULT_BOT_NAME, "bot name")
-	authUrlPtr                 = flag.String(PARAMETER_AUTH_URL, "", "auth url")
-	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
-	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
-	adminAuthTokenPtr          = flag.String(PARAMETER_ADMIN, "", "admin")
-	restrictToTokensPtr        = flag.String(PARAMETER_RESTRICT_TO_TOKENS, "", "restrict to tokens")
+	nsqLookupdAddressPtr       = flag.String(parameterNsqLookupd, "", "nsq lookupd address")
+	nsqdAddressPtr             = flag.String(parameterNsqd, "", "nsqd address")
+	botNamePtr                 = flag.String(parameterBotName, "auth", "bot name")
+	authUrlPtr                 = flag.String(parameterAuthUrl, "", "auth url")
+	authApplicationNamePtr     = flag.String(parameterAuthApplicationName, "", "auth application name")
+	authApplicationPasswordPtr = flag.String(parameterAuthApplicationPassword, "", "auth application password")
+	adminAuthTokenPtr          = flag.String(parameterAdmin, "", "admin")
+	restrictToTokensPtr        = flag.String(parameterRestrictToTokens, "", "restrict to tokens")
+	prefixPtr                  = flag.String(parameterPrefix, "/auth", "prefix commands start with")
 )
 
 func main() {
 	defer glog.Flush()
 	glog.CopyStandardLogTo("info")
 	flag.Parse()
-
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	err := do(
-		PREFIX,
-		nsq_utils.NsqdAddress(*nsqdAddressPtr),
-		nsq_utils.NsqLookupdAddress(*nsqLookupdAddressPtr),
-		*botNamePtr,
-		*authUrlPtr,
-		*authApplicationNamePtr,
-		*authApplicationPasswordPtr,
-		auth_model.AuthToken(*adminAuthTokenPtr),
-		*restrictToTokensPtr,
-	)
-	if err != nil {
+	if err := do(); err != nil {
 		glog.Exit(err)
 	}
 }
 
-func do(
-	prefix string,
-	nsqdAddress nsq_utils.NsqdAddress,
-	nsqLookupdAddress nsq_utils.NsqLookupdAddress,
-	botname string,
-	authUrl string,
-	authApplicationName string,
-	authApplicationPassword string,
-	adminAuthToken auth_model.AuthToken,
-	restrictToTokens string,
-) error {
-	requestConsumer, err := createRequestConsumer(
-		prefix,
-		nsqdAddress,
-		nsqLookupdAddress,
-		botname,
-		authUrl,
-		authApplicationName,
-		authApplicationPassword,
-		adminAuthToken,
-		restrictToTokens,
-	)
+func do() error {
+	config := createConfig()
+	if err := config.Validate(); err != nil {
+		return err
+	}
+	producer, err := producer.New(config.NsqdAddress)
 	if err != nil {
 		return err
 	}
-	return requestConsumer.Run()
+	factory := factory.New(config, producer)
+	return factory.RequestConsumer().Run()
 }
 
-func createRequestConsumer(
-	prefix string,
-	nsqdAddress nsq_utils.NsqdAddress,
-	nsqLookupdAddress nsq_utils.NsqLookupdAddress,
-	botname string,
-	authUrl string,
-	authApplicationName string,
-	authApplicationPassword string,
-	adminAuthToken auth_model.AuthToken,
-	restrictToTokens string,
-) (request_consumer.RequestConsumer, error) {
-	if len(nsqLookupdAddress) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_NSQ_LOOKUPD)
+func createConfig() model.Config {
+	return model.Config{
+		Prefix:                  model.Prefix(*prefixPtr),
+		NsqdAddress:             nsq_utils.NsqdAddress(*nsqdAddressPtr),
+		NsqLookupdAddress:       nsq_utils.NsqLookupdAddress(*nsqLookupdAddressPtr),
+		Botname:                 nsq_utils.NsqChannel(*botNamePtr),
+		AuthUrl:                 auth_model.Url(*authUrlPtr),
+		AuthApplicationName:     auth_model.ApplicationName(*authApplicationNamePtr),
+		AuthApplicationPassword: auth_model.ApplicationPassword(*authApplicationPasswordPtr),
+		AdminAuthToken:          auth_model.AuthToken(*adminAuthTokenPtr),
+		RestrictToTokens:        auth_model.ParseTokens(*restrictToTokensPtr),
 	}
-	if len(nsqdAddress) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_NSQD)
-	}
-	if len(botname) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_BOT_NAME)
-	}
-	if len(authUrl) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_URL)
-	}
-	if len(authApplicationName) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_APPLICATION_NAME)
-	}
-	if len(authApplicationPassword) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_APPLICATION_PASSWORD)
-	}
-
-	httpClient := http_client_builder.New().WithoutProxy().Build()
-	httpRest := http_rest.New(httpClient.Do)
-
-	restCaller := rest.New(httpRest.Call, authUrl)
-
-	token := auth_model.AuthToken(header.CreateAuthorizationToken(authApplicationName, authApplicationPassword))
-
-	applicationCreatorAction := application_creator_action.New(restCaller.Call, token)
-	applicationCreatorHandler := application_creator_handler.New(prefix, adminAuthToken, applicationCreatorAction.Create)
-
-	applicationDeletorAction := application_deletor_action.New(restCaller.Call, token)
-	applicationDeletorHandler := application_deletor_handler.New(prefix, adminAuthToken, applicationDeletorAction.Delete)
-
-	applicationExistsAction := application_exists_action.New(restCaller.Call, token)
-	applicationExistsHandler := application_exists_handler.New(prefix, adminAuthToken, applicationExistsAction.Exists)
-
-	userWhoamiAction := user_whoami_action.New(restCaller.Call, token)
-	userWhoamiHandler := user_whoami_handler.New(prefix, userWhoamiAction.Whoami)
-
-	userRegisterAction := user_register_action.New(restCaller.Call, token)
-	userRegisterHandler := user_register_handler.New(prefix, userRegisterAction.Register)
-
-	userUnregisterAction := user_unregister_action.New(restCaller.Call, token)
-	userUnregisterHandler := user_unregister_handler.New(prefix, userUnregisterAction.Unregister)
-
-	userCreateAction := user_create_action.New(restCaller.Call, token)
-	userCreateHandler := user_create_handler.New(prefix, adminAuthToken, userCreateAction.CreateUser)
-
-	userDeleteAction := user_delete_action.New(restCaller.Call, token)
-	userDeleteHandler := user_delete_handler.New(prefix, adminAuthToken, userDeleteAction.DeleteUser)
-
-	tokenAddAction := token_add_action.New(restCaller.Call, token)
-	tokenAddHandler := token_add_handler.New(prefix, tokenAddAction.Add)
-
-	tokenRemoveAction := token_remove_action.New(restCaller.Call, token)
-	tokenRemoveHandler := token_remove_handler.New(prefix, tokenRemoveAction.Remove)
-
-	userAddGroupAction := user_add_group_action.New(restCaller.Call, token)
-	userAddGroupHandler := user_add_group_handler.New(prefix, adminAuthToken, userAddGroupAction.AddGroupToUser)
-
-	userRemoveGroupAction := user_remove_group_action.New(restCaller.Call, token)
-	userRemoveGroupHandler := user_remove_group_handler.New(prefix, adminAuthToken, userRemoveGroupAction.RemoveGroupToUser)
-
-	userListAction := user_list_action.New(restCaller.Call, token)
-	userListHandler := user_list_handler.New(prefix, adminAuthToken, userListAction.ListUsers)
-
-	producer, err := producer.New(nsqdAddress)
-	if err != nil {
-		return nil, err
-	}
-
-	sender := sender.New(producer)
-
-	var messageHandler api.MessageHandler = match.New(
-		prefix,
-		applicationCreatorHandler,
-		applicationDeletorHandler,
-		applicationExistsHandler,
-		userWhoamiHandler,
-		userRegisterHandler,
-		userUnregisterHandler,
-		userCreateHandler,
-		userDeleteHandler,
-		tokenAddHandler,
-		tokenRemoveHandler,
-		userAddGroupHandler,
-		userRemoveGroupHandler,
-		userListHandler,
-	)
-
-	tokens := restrict_to_tokens.ParseRestrictToken(restrictToTokens)
-	if len(tokens) > 0 {
-		messageHandler = restrict_to_tokens.New(
-			messageHandler,
-			tokens,
-		)
-	}
-
-	return request_consumer.New(sender.Send, nsqdAddress, nsqLookupdAddress, nsq_utils.NsqChannel(botname), messageHandler), nil
 }

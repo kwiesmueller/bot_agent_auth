@@ -15,12 +15,9 @@ func TestMain(m *testing.M) {
 	os.Exit(exit)
 }
 
-func TestCreateRequestConsumer(t *testing.T) {
-	createRequestConsumer, err := createRequestConsumer("prefix", "nsqd", "nsqlookupd", "testbot", "auth-api", "auth-app-name", "auth-app-pw", "asdfasdf", "")
-	if err := AssertThat(err, NilValue()); err != nil {
-		t.Fatal(err)
-	}
-	if err := AssertThat(createRequestConsumer, NotNilValue()); err != nil {
+func TestCreateConfig(t *testing.T) {
+	config := createConfig()
+	if err := AssertThat(config, NotNilValue()); err != nil {
 		t.Fatal(err)
 	}
 }
