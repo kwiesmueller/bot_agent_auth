@@ -36,12 +36,13 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	glog.V(2).Infof("handle message: %s", request.Message)
 	username, err := h.command.Parameter(request, "[USERNAME]")
 	if err != nil {
+		glog.Warningf("parse parameter failed: %v", err)
 		return nil, err
 	}
 	glog.V(2).Infof("list tokens for username %s", username)
 	tokens, err := h.listTokensForUser(auth_model.UserName(username))
 	if err != nil {
-		glog.V(2).Infof("list tokens %s failed: %v", username, err)
+		glog.Warningf("list tokens %s failed: %v", username, err)
 		return response.CreateReponseMessage("list token failed"), nil
 	}
 	glog.V(2).Infof("got tokens for username %s => send success message", username)
