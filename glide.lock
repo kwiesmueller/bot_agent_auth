@@ -1,8 +1,8 @@
 hash: 81315606e6d8147c4502f62a9b5e73537f45b9f70d7155b935d6062f5e29a896
-updated: 2016-11-09T00:26:31.927934931+01:00
+updated: 2016-11-09T00:51:53.267116598+01:00
 imports:
 - name: github.com/bborbe/auth
-  version: 090ccf59febf4b362c74f8df8667d7f66c0cd540
+  version: fc640a0f7f8237226d6ba9a8aa535c150ac51590
   subpackages:
   - client/application
   - client/rest
