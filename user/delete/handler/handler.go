@@ -10,7 +10,7 @@ import (
 	"github.com/golang/glog"
 )
 
-type DeleteUser func(username string) error
+type DeleteUser func(username auth_model.UserName) error
 
 type handler struct {
 	command   command.Command
@@ -41,7 +41,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 		return nil, err
 	}
 	glog.V(2).Infof("delete user %s", username)
-	if err := h.delete(username); err != nil {
+	if err := h.delete(auth_model.UserName(username)); err != nil {
 		glog.V(2).Infof("delete user %s failed: %v", username, err)
 		return response.CreateReponseMessage("delete failed"), nil
 	}

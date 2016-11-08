@@ -13,15 +13,15 @@ import (
 	"github.com/golang/glog"
 )
 
-type DeleteApplication func(applicationName string) error
+type deleteApplication func(applicationName auth_model.ApplicationName) error
 
 type handler struct {
 	command           command.Command
 	authToken         auth_model.AuthToken
-	deleteApplication DeleteApplication
+	deleteApplication deleteApplication
 }
 
-func New(prefix model.Prefix, authToken auth_model.AuthToken, deleteApplication DeleteApplication) *handler {
+func New(prefix model.Prefix, authToken auth_model.AuthToken, deleteApplication deleteApplication) *handler {
 	h := new(handler)
 	h.command = command.New(prefix.String(), "application", "delete", "[NAME]")
 	h.authToken = authToken
@@ -46,7 +46,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 		return nil, err
 	}
 	glog.V(2).Infof("delete applcation %s", applicationName)
-	if err := h.deleteApplication(applicationName); err != nil {
+	if err := h.deleteApplication(auth_model.ApplicationName(applicationName)); err != nil {
 		return response.CreateReponseMessage(fmt.Sprintf("delete application %s failed", applicationName)), nil
 	}
 	return response.CreateReponseMessage(fmt.Sprintf("application %s deleted", applicationName)), nil

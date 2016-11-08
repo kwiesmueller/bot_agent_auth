@@ -52,8 +52,8 @@ func TestMatchFalse(t *testing.T) {
 func TestHandleMessageSuccess(t *testing.T) {
 	username := "tester"
 	counter := 0
-	c := New("/auth", "", func(_username string) error {
-		if err := AssertThat(_username, Is(username)); err != nil {
+	c := New("/auth", "", func(_username auth_model.UserName) error {
+		if err := AssertThat(_username.String(), Is(username)); err != nil {
 			t.Fatal(err)
 		}
 		counter++
@@ -83,8 +83,8 @@ func TestHandleMessageSuccess(t *testing.T) {
 func TestHandleMessageFailure(t *testing.T) {
 	username := "tester"
 	counter := 0
-	c := New("/auth", "", func(_username string) error {
-		if err := AssertThat(_username, Is(username)); err != nil {
+	c := New("/auth", "", func(_username auth_model.UserName) error {
+		if err := AssertThat(_username.String(), Is(username)); err != nil {
 			t.Fatal(err)
 		}
 		counter++

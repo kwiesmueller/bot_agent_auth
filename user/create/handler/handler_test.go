@@ -1,19 +1,15 @@
 package handler
 
 import (
-	"testing"
-
 	"fmt"
-
-	"os"
-
-	auth_model "github.com/bborbe/auth/model"
-
 	. "github.com/bborbe/assert"
+	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/bot_agent/api"
 	h "github.com/bborbe/bot_agent/message_handler/match"
 	"github.com/bborbe/http/header"
 	"github.com/golang/glog"
+	"os"
+	"testing"
 )
 
 func TestMain(m *testing.M) {
@@ -55,11 +51,11 @@ func TestHandleMessageSuccess(t *testing.T) {
 	password := "abc"
 	authToken := auth_model.AuthToken(header.CreateAuthorizationToken(userName, password))
 	counter := 0
-	c := New("/auth", "", func(_userName string, _authToken auth_model.AuthToken) error {
+	c := New("/auth", "", func(_userName auth_model.UserName, _authToken auth_model.AuthToken) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}
-		if err := AssertThat(_userName, Is(userName)); err != nil {
+		if err := AssertThat(_userName.String(), Is(userName)); err != nil {
 			t.Fatal(err)
 		}
 		counter++
@@ -91,11 +87,11 @@ func TestHandleMessageFailure(t *testing.T) {
 	password := "abc"
 	authToken := auth_model.AuthToken(header.CreateAuthorizationToken(userName, password))
 	counter := 0
-	c := New("/auth", "", func(_userName string, _authToken auth_model.AuthToken) error {
+	c := New("/auth", "", func(_userName auth_model.UserName, _authToken auth_model.AuthToken) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}
-		if err := AssertThat(_userName, Is(userName)); err != nil {
+		if err := AssertThat(_userName.String(), Is(userName)); err != nil {
 			t.Fatal(err)
 		}
 		counter++

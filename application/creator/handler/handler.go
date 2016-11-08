@@ -5,7 +5,6 @@ import (
 
 	auth_model "github.com/bborbe/auth/model"
 
-	auth_api "github.com/bborbe/auth/model"
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
 	"github.com/bborbe/bot_agent/matcher"
@@ -14,7 +13,7 @@ import (
 	"github.com/golang/glog"
 )
 
-type CreateApplication func(applicationName string) (*auth_api.ApplicationPassword, error)
+type CreateApplication func(applicationName auth_model.ApplicationName) (*auth_model.ApplicationPassword, error)
 
 type handler struct {
 	command           command.Command
@@ -46,7 +45,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	applicationPassword, err := h.createApplication(applicationName)
+	applicationPassword, err := h.createApplication(auth_model.ApplicationName(applicationName))
 	if err != nil {
 		glog.V(2).Infof("application creation failed => send failure message: %v", err)
 		return response.CreateReponseMessage(fmt.Sprintf("create application %s failed", applicationName)), nil

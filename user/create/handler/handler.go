@@ -11,7 +11,7 @@ import (
 	"github.com/golang/glog"
 )
 
-type Create func(userName string, authToken auth_model.AuthToken) error
+type Create func(userName auth_model.UserName, authToken auth_model.AuthToken) error
 
 type handler struct {
 	command   command.Command
@@ -47,7 +47,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	}
 	authToken := auth_model.AuthToken(header.CreateAuthorizationToken(userName, password))
 	glog.V(2).Infof("create user %s", userName)
-	if err := h.create(userName, authToken); err != nil {
+	if err := h.create(auth_model.UserName(userName), authToken); err != nil {
 		glog.V(2).Infof("create %s failed: %v", userName, err)
 		return response.CreateReponseMessage("create failed"), nil
 	}

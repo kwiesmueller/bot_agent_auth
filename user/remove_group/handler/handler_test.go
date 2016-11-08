@@ -1,6 +1,7 @@
 package handler
 
 import (
+	auth_model "github.com/bborbe/auth/model"
 	"testing"
 
 	"fmt"
@@ -51,11 +52,11 @@ func TestHandleMessageSuccess(t *testing.T) {
 	userName := "tester"
 	groupName := "admin"
 	counter := 0
-	c := New("/auth", "", func(_groupName string, _userName string) error {
-		if err := AssertThat(_groupName, Is(groupName)); err != nil {
+	c := New("/auth", "", func(_userName auth_model.UserName, _groupName auth_model.GroupName) error {
+		if err := AssertThat(_groupName.String(), Is(groupName)); err != nil {
 			t.Fatal(err)
 		}
-		if err := AssertThat(_userName, Is(userName)); err != nil {
+		if err := AssertThat(_userName.String(), Is(userName)); err != nil {
 			t.Fatal(err)
 		}
 		counter++
@@ -85,11 +86,11 @@ func TestHandleMessageFailure(t *testing.T) {
 	userName := "tester"
 	groupName := "admin"
 	counter := 0
-	c := New("/auth", "", func(_groupName string, _userName string) error {
-		if err := AssertThat(_groupName, Is(groupName)); err != nil {
+	c := New("/auth", "", func(_userName auth_model.UserName, _groupName auth_model.GroupName) error {
+		if err := AssertThat(_groupName.String(), Is(groupName)); err != nil {
 			t.Fatal(err)
 		}
-		if err := AssertThat(_userName, Is(userName)); err != nil {
+		if err := AssertThat(_userName.String(), Is(userName)); err != nil {
 			t.Fatal(err)
 		}
 		counter++

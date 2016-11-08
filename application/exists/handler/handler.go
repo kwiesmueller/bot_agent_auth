@@ -13,7 +13,7 @@ import (
 	"github.com/golang/glog"
 )
 
-type ExistsApplication func(applicationName string) (bool, error)
+type ExistsApplication func(applicationName auth_model.ApplicationName) (bool, error)
 
 type handler struct {
 	command           command.Command
@@ -45,7 +45,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	exists, err := h.existsApplication(applicationName)
+	exists, err := h.existsApplication(auth_model.ApplicationName(applicationName))
 	if err != nil {
 		glog.V(2).Infof("application exists failed => send failure message: %v", err)
 		return response.CreateReponseMessage(fmt.Sprintf("exists application %s failed", applicationName)), nil

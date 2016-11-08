@@ -13,7 +13,7 @@ import (
 	"github.com/golang/glog"
 )
 
-type AddGroupToUser func(groupName string, userName string) error
+type AddGroupToUser func(userName auth_model.UserName, groupName auth_model.GroupName) error
 
 type handler struct {
 	command        command.Command
@@ -51,7 +51,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 		return nil, err
 	}
 	glog.V(2).Infof("add group %s to user %s", groupName, userName)
-	if err := h.addGroupToUser(groupName, userName); err != nil {
+	if err := h.addGroupToUser(auth_model.UserName(userName), auth_model.GroupName(groupName)); err != nil {
 		glog.V(2).Infof("add group %s to user %s failed: %v", groupName, userName, err)
 		return response.CreateReponseMessage(fmt.Sprintf("add group %s to user %s failed", groupName, userName)), nil
 	}
