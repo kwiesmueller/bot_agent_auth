@@ -19,7 +19,7 @@ type handler struct {
 
 func New(prefix model.Prefix, add add) *handler {
 	h := new(handler)
-	h.command = command.New(prefix.String(), "token", "add", "[NAME]")
+	h.command = command.New(prefix.String(), "token", "add", "[TOKEN]")
 	h.add = add
 	return h
 }
@@ -34,7 +34,7 @@ func (h *handler) Help(request *api.Request) []string {
 
 func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	glog.V(2).Infof("handle message: %s", request.Message)
-	token, err := h.command.Parameter(request, "[NAME]")
+	token, err := h.command.Parameter(request, "[TOKEN]")
 	if err != nil {
 		return nil, err
 	}

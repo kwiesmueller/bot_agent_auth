@@ -1,8 +1,8 @@
 hash: 81315606e6d8147c4502f62a9b5e73537f45b9f70d7155b935d6062f5e29a896
-updated: 2016-11-08T20:25:17.223039717+01:00
+updated: 2016-11-08T22:27:14.809665854+01:00
 imports:
 - name: github.com/bborbe/auth
-  version: 6aea7262b247ab78e99c1b4bb98035d35ffa09cc
+  version: eac7c4ffc8e18d4621cc0b062c25361c3786a9c9
   subpackages:
   - model
   - v1
