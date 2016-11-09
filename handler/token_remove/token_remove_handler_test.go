@@ -53,7 +53,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 	authToken := auth_model.AuthToken("abc")
 	token := auth_model.AuthToken("edf")
 	counter := 0
-	c := New("/auth", func(_authToken auth_model.AuthToken, _token auth_model.AuthToken) error {
+	c := New("/auth", func(_token auth_model.AuthToken, _authToken auth_model.AuthToken) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}
@@ -88,7 +88,7 @@ func TestHandleMessageFailure(t *testing.T) {
 	authToken := auth_model.AuthToken("abc")
 	token := auth_model.AuthToken("edf")
 	counter := 0
-	c := New("/auth", func(_authToken auth_model.AuthToken, _token auth_model.AuthToken) error {
+	c := New("/auth", func(_token auth_model.AuthToken, _authToken auth_model.AuthToken) error {
 		if err := AssertThat(_authToken, Is(authToken)); err != nil {
 			t.Fatal(err)
 		}

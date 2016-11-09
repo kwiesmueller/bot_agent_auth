@@ -10,17 +10,20 @@ import (
 	"github.com/golang/glog"
 )
 
-type add func(authToken auth_model.AuthToken, token auth_model.AuthToken) error
+type addTokenToUserWithToken func(newToken auth_model.AuthToken, userToken auth_model.AuthToken) error
 
 type handler struct {
-	command command.Command
-	add     add
+	command                 command.Command
+	addTokenToUserWithToken addTokenToUserWithToken
 }
 
-func New(prefix model.Prefix, add add) *handler {
+func New(
+	prefix model.Prefix,
+	addTokenToUserWithToken addTokenToUserWithToken,
+) *handler {
 	h := new(handler)
 	h.command = command.New(prefix.String(), "token", "add", "[TOKEN]")
-	h.add = add
+	h.addTokenToUserWithToken = addTokenToUserWithToken
 	return h
 }
 
@@ -39,7 +42,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 		return nil, err
 	}
 	glog.V(2).Infof("add token %s", token)
-	if err := h.add(request.AuthToken, auth_model.AuthToken(token)); err != nil {
+	if err := h.addTokenToUserWithToken(auth_model.AuthToken(token), request.AuthToken); err != nil {
 		glog.V(2).Infof("add token %s failed: %v", token, err)
 		return response.CreateReponseMessage("add token failed"), nil
 	}

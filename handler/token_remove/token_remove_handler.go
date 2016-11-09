@@ -10,17 +10,20 @@ import (
 	"github.com/golang/glog"
 )
 
-type remove func(authToken auth_model.AuthToken, token auth_model.AuthToken) error
+type removeTokenFromUserWithToken func(newToken auth_model.AuthToken, userToken auth_model.AuthToken) error
 
 type handler struct {
-	command command.Command
-	remove  remove
+	command                      command.Command
+	removeTokenFromUserWithToken removeTokenFromUserWithToken
 }
 
-func New(prefix model.Prefix, remove remove) *handler {
+func New(
+	prefix model.Prefix,
+	removeTokenFromUserWithToken removeTokenFromUserWithToken,
+) *handler {
 	h := new(handler)
 	h.command = command.New(prefix.String(), "token", "remove", "[TOKEN]")
-	h.remove = remove
+	h.removeTokenFromUserWithToken = removeTokenFromUserWithToken
 	return h
 }
 
@@ -39,7 +42,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 		return nil, err
 	}
 	glog.V(2).Infof("remove token %s", token)
-	if err := h.remove(request.AuthToken, auth_model.AuthToken(token)); err != nil {
+	if err := h.removeTokenFromUserWithToken(auth_model.AuthToken(token), request.AuthToken); err != nil {
 		glog.V(2).Infof("remove token %s failed: %v", token, err)
 		return response.CreateReponseMessage("remove token failed"), nil
 	}
