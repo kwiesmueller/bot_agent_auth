@@ -1,4 +1,4 @@
-package handler
+package user_create
 
 import (
 	auth_model "github.com/bborbe/auth/model"

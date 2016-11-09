@@ -1,4 +1,4 @@
-package handler
+package user_unregister
 
 import (
 	auth_model "github.com/bborbe/auth/model"

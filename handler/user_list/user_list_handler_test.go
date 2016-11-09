@@ -1,4 +1,4 @@
-package handler
+package user_list
 
 import (
 	"testing"

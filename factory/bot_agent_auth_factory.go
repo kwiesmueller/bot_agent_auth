@@ -29,7 +29,8 @@ import (
 	user_create_handler "github.com/bborbe/bot_agent_auth/handler/user_create"
 	user_delete_handler "github.com/bborbe/bot_agent_auth/handler/user_delete"
 	user_list_handler "github.com/bborbe/bot_agent_auth/handler/user_list"
-	token_list_handler "github.com/bborbe/bot_agent_auth/handler/user_list_token"
+	user_list_groups_handler "github.com/bborbe/bot_agent_auth/handler/user_list_group"
+	user_list_tokens_handler "github.com/bborbe/bot_agent_auth/handler/user_list_token"
 	user_register_handler "github.com/bborbe/bot_agent_auth/handler/user_register"
 	user_remove_group_handler "github.com/bborbe/bot_agent_auth/handler/user_remove_group"
 	user_unregister_handler "github.com/bborbe/bot_agent_auth/handler/user_unregister"
@@ -102,7 +103,8 @@ func (b *botAgentAuthfactory) RequestConsumer() request_consumer.RequestConsumer
 		b.userAddGroupHandler(),
 		b.userRemoveGroupHandler(),
 		b.userListHandler(),
-		b.tokenListHandler(),
+		b.userListTokensHandler(),
+		b.userListGroupsHandler(),
 	)
 
 	if len(b.config.RestrictToTokens) > 0 {
@@ -183,6 +185,10 @@ func (b *botAgentAuthfactory) userListHandler() match.Handler {
 	return user_list_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.UserService().List)
 }
 
-func (b *botAgentAuthfactory) tokenListHandler() match.Handler {
-	return token_list_handler.New(b.config.Prefix, b.UserService().ListTokenOfUser)
+func (b *botAgentAuthfactory) userListTokensHandler() match.Handler {
+	return user_list_tokens_handler.New(b.config.Prefix, b.UserService().ListTokenOfUser)
+}
+
+func (b *botAgentAuthfactory) userListGroupsHandler() match.Handler {
+	return user_list_groups_handler.New(b.config.Prefix, b.UserGroupService().ListGroupNamesForUsername)
 }

@@ -1,4 +1,4 @@
-package handler
+package user_add_group
 
 import (
 	"fmt"

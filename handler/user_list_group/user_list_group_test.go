@@ -1,4 +1,4 @@
-package user_list_token
+package user_list_group
 
 import (
 	"testing"
@@ -28,7 +28,7 @@ func TestImplementsHandler(t *testing.T) {
 func TestMatchTrue(t *testing.T) {
 	c := New("/auth", nil)
 	match := c.Match(&api.Request{
-		Message: "/auth user abc list tokens",
+		Message: "/auth user abc list groups",
 	})
 	if err := AssertThat(match, Is(true)); err != nil {
 		t.Fatal(err)

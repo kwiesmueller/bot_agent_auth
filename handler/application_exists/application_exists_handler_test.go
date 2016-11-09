@@ -1,4 +1,4 @@
-package handler
+package application_exists
 
 import (
 	"testing"

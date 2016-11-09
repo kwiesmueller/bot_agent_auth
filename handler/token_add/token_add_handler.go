@@ -1,4 +1,4 @@
-package handler
+package token_add
 
 import (
 	auth_model "github.com/bborbe/auth/model"

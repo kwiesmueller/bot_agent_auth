@@ -1,4 +1,4 @@
-package handler
+package token_remove
 
 import (
 	"testing"

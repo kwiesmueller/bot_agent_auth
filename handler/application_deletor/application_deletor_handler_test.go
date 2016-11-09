@@ -1,4 +1,4 @@
-package handler
+package application_deletor
 
 import (
 	"testing"
