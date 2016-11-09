@@ -84,10 +84,15 @@ func (b *botAgentAuthfactory) restCaller() rest.Rest {
 	return rest.New(httpRest.Call, b.config.AuthUrl.String())
 }
 
+func (b *botAgentAuthfactory) Sender() sender.Sender {
+	return sender.New(b.producer)
+}
+
 func (b *botAgentAuthfactory) RequestConsumer() request_consumer.RequestConsumer {
+	return request_consumer.New(b.Sender().Send, b.config.NsqdAddress, b.config.NsqLookupdAddress, b.config.Botname, b.MessageHandler())
+}
 
-	sender := sender.New(b.producer)
-
+func (b *botAgentAuthfactory) MessageHandler() api.MessageHandler {
 	var messageHandler api.MessageHandler = match.New(
 		b.config.Prefix.String(),
 		b.applicationCreatorHandler(),
@@ -113,8 +118,7 @@ func (b *botAgentAuthfactory) RequestConsumer() request_consumer.RequestConsumer
 			b.config.RestrictToTokens,
 		)
 	}
-
-	return request_consumer.New(sender.Send, b.config.NsqdAddress, b.config.NsqLookupdAddress, b.config.Botname, messageHandler)
+	return messageHandler
 }
 
 func (b *botAgentAuthfactory) createApplication(applicationName auth_model.ApplicationName) (*auth_model.ApplicationPassword, error) {
