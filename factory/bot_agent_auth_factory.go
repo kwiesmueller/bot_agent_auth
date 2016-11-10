@@ -1,11 +1,6 @@
 package factory
 
 import (
-	"github.com/bborbe/auth/client/application"
-	auth_client_rest "github.com/bborbe/auth/client/rest"
-	"github.com/bborbe/auth/client/user"
-	"github.com/bborbe/auth/client/user_data"
-	"github.com/bborbe/auth/client/user_group"
 	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/auth/service"
 	"github.com/bborbe/bot_agent/api"
@@ -20,6 +15,9 @@ import (
 	http_rest "github.com/bborbe/http/rest"
 	"github.com/nsqio/go-nsq"
 
+	"net/http"
+
+	"github.com/bborbe/auth/client"
 	application_creator_handler "github.com/bborbe/bot_agent_auth/handler/application_creator"
 	application_deletor_handler "github.com/bborbe/bot_agent_auth/handler/application_deletor"
 	application_exists_handler "github.com/bborbe/bot_agent_auth/handler/application_exists"
@@ -52,26 +50,28 @@ func New(
 	return b
 }
 
-func (m *botAgentAuthfactory) authClientRest() auth_client_rest.Rest {
-	httpClient := http_client_builder.New().WithoutProxy().Build()
-	httpRest := http_rest.New(httpClient.Do)
-	return auth_client_rest.New(httpRest.Call, m.config.AuthUrl, m.config.AuthApplicationName, m.config.AuthApplicationPassword)
+func (b *botAgentAuthfactory) httpClient() *http.Client {
+	return http_client_builder.New().WithoutProxy().Build()
 }
 
-func (m *botAgentAuthfactory) UserService() service.UserService {
-	return user.New(m.authClientRest().Call)
+func (b *botAgentAuthfactory) authClient() client.Client {
+	return client.New(b.httpClient().Do, b.config.AuthUrl, b.config.AuthApplicationName, b.config.AuthApplicationPassword)
 }
 
-func (m *botAgentAuthfactory) UserGroupService() service.UserGroupService {
-	return user_group.New(m.authClientRest().Call)
+func (b *botAgentAuthfactory) UserService() service.UserService {
+	return b.authClient().UserService()
 }
 
-func (m *botAgentAuthfactory) UserDataService() service.UserDataService {
-	return user_data.New(m.authClientRest().Call)
+func (b *botAgentAuthfactory) UserGroupService() service.UserGroupService {
+	return b.authClient().UserGroupService()
 }
 
-func (m *botAgentAuthfactory) ApplicationService() service.ApplicationService {
-	return application.New(m.authClientRest().Call)
+func (b *botAgentAuthfactory) UserDataService() service.UserDataService {
+	return b.authClient().UserDataService()
+}
+
+func (b *botAgentAuthfactory) ApplicationService() service.ApplicationService {
+	return b.authClient().ApplicationService()
 }
 
 func (b *botAgentAuthfactory) token() auth_model.AuthToken {

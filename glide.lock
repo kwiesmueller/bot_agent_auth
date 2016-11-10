@@ -1,11 +1,11 @@
 hash: 81315606e6d8147c4502f62a9b5e73537f45b9f70d7155b935d6062f5e29a896
-updated: 2016-11-09T13:10:43.306447569+01:00
+updated: 2016-11-11T00:00:58.22036213+01:00
 imports:
 - name: github.com/bborbe/auth
-  version: 1a1db441734155bed3b49b7445784c7665a6e9c3
+  version: 26a82d0fdfe72f0cfc4b17e1f1010728816b1735
   subpackages:
+  - client
   - client/application
-  - client/rest
   - client/user
   - client/user_data
   - client/user_group
@@ -13,7 +13,7 @@ imports:
   - service
   - v1
 - name: github.com/bborbe/bot_agent
-  version: ff6cfc3db0551b01221268b00d61ab9c5c4bcf69
+  version: 81d6d24f8b469d853457a853d933371da4457067
   subpackages:
   - api
   - command
@@ -32,7 +32,7 @@ imports:
 - name: github.com/bborbe/flagenv
   version: 96aab95bb1341e7a7ccf9160e49792e2ad3b0e08
 - name: github.com/bborbe/http
-  version: 5e3917d07a18bd0ac6f78df4669aa25c4a419ad9
+  version: 4a9c65a4efec460ef645e1cc4d9241e9bf661069
   subpackages:
   - client_builder
   - header
