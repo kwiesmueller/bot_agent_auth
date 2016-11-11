@@ -31,6 +31,8 @@ import (
 	user_list_tokens_handler "github.com/bborbe/bot_agent_auth/handler/user_list_token"
 	user_register_handler "github.com/bborbe/bot_agent_auth/handler/user_register"
 	user_remove_group_handler "github.com/bborbe/bot_agent_auth/handler/user_remove_group"
+	"github.com/bborbe/bot_agent_auth/handler/user_token_add"
+	"github.com/bborbe/bot_agent_auth/handler/user_token_remove"
 	user_unregister_handler "github.com/bborbe/bot_agent_auth/handler/user_unregister"
 	user_whoami_handler "github.com/bborbe/bot_agent_auth/handler/user_whoami"
 )
@@ -110,6 +112,8 @@ func (b *botAgentAuthfactory) MessageHandler() api.MessageHandler {
 		b.userListHandler(),
 		b.userListTokensHandler(),
 		b.userListGroupsHandler(),
+		b.userTokenAddHandler(),
+		b.userTokenRemoveHandler(),
 	)
 
 	if len(b.config.RestrictToTokens) > 0 {
@@ -195,4 +199,12 @@ func (b *botAgentAuthfactory) userListTokensHandler() match.Handler {
 
 func (b *botAgentAuthfactory) userListGroupsHandler() match.Handler {
 	return user_list_groups_handler.New(b.config.Prefix, b.UserGroupService().ListGroupNamesForUsername)
+}
+
+func (b *botAgentAuthfactory) userTokenAddHandler() match.Handler {
+	return user_token_add.New(b.config.Prefix, b.UserService().AddTokenToUser)
+}
+
+func (b *botAgentAuthfactory) userTokenRemoveHandler() match.Handler {
+	return user_token_remove.New(b.config.Prefix, b.UserService().RemoveTokenFromUser)
 }
