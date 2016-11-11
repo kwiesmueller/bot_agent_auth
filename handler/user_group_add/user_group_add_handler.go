@@ -1,4 +1,4 @@
-package user_add_group
+package user_group_add
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ type handler struct {
 
 func New(prefix model.Prefix, authToken auth_model.AuthToken, addGroupToUser AddGroupToUser) *handler {
 	h := new(handler)
-	h.command = command.New(prefix.String(), "group", "[GROUP]", "add", "to", "user", "[USER]")
+	h.command = command.New(prefix.String(), "user", "[USERNAME]", "add", "group", "[GROUP]")
 	h.authToken = authToken
 	h.addGroupToUser = addGroupToUser
 	return h
@@ -46,7 +46,7 @@ func (h *handler) HandleMessage(request *api.Request) ([]*api.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	userName, err := h.command.Parameter(request, "[USER]")
+	userName, err := h.command.Parameter(request, "[USERNAME]")
 	if err != nil {
 		return nil, err
 	}

@@ -23,14 +23,14 @@ import (
 	application_exists_handler "github.com/bborbe/bot_agent_auth/handler/application_exists"
 	token_add_handler "github.com/bborbe/bot_agent_auth/handler/token_add"
 	token_remove_handler "github.com/bborbe/bot_agent_auth/handler/token_remove"
-	user_add_group_handler "github.com/bborbe/bot_agent_auth/handler/user_add_group"
+	user_group_add_handler "github.com/bborbe/bot_agent_auth/handler/user_group_add"
 	user_create_handler "github.com/bborbe/bot_agent_auth/handler/user_create"
 	user_delete_handler "github.com/bborbe/bot_agent_auth/handler/user_delete"
 	user_list_handler "github.com/bborbe/bot_agent_auth/handler/user_list"
 	user_list_groups_handler "github.com/bborbe/bot_agent_auth/handler/user_list_group"
 	user_list_tokens_handler "github.com/bborbe/bot_agent_auth/handler/user_list_token"
 	user_register_handler "github.com/bborbe/bot_agent_auth/handler/user_register"
-	user_remove_group_handler "github.com/bborbe/bot_agent_auth/handler/user_remove_group"
+	user_group_remove_handler "github.com/bborbe/bot_agent_auth/handler/user_group_remove"
 	"github.com/bborbe/bot_agent_auth/handler/user_token_add"
 	"github.com/bborbe/bot_agent_auth/handler/user_token_remove"
 	user_unregister_handler "github.com/bborbe/bot_agent_auth/handler/user_unregister"
@@ -182,11 +182,11 @@ func (b *botAgentAuthfactory) tokenRemoveHandler() match.Handler {
 }
 
 func (b *botAgentAuthfactory) userAddGroupHandler() match.Handler {
-	return user_add_group_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.UserGroupService().AddUserToGroup)
+	return user_group_add_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.UserGroupService().AddUserToGroup)
 }
 
 func (b *botAgentAuthfactory) userRemoveGroupHandler() match.Handler {
-	return user_remove_group_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.UserGroupService().RemoveUserFromGroup)
+	return user_group_remove_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.UserGroupService().RemoveUserFromGroup)
 }
 
 func (b *botAgentAuthfactory) userListHandler() match.Handler {
