@@ -32,7 +32,7 @@ func TestImplementsHandler(t *testing.T) {
 func TestMatchTrue(t *testing.T) {
 	c := New("/auth", nil)
 	match := c.Match(&api.Request{
-		Message: "/auth remove token token123 from user user123",
+		Message: "/auth user user123 remove token token123",
 	})
 	if err := AssertThat(match, Is(true)); err != nil {
 		t.Fatal(err)
@@ -42,7 +42,7 @@ func TestMatchTrue(t *testing.T) {
 func TestMatchFalse(t *testing.T) {
 	c := New("/auth", nil)
 	match := c.Match(&api.Request{
-		Message: "/auth remove token token123 from user",
+		Message: "/auth user user123 remove token",
 	})
 	if err := AssertThat(match, Is(false)); err != nil {
 		t.Fatal(err)
@@ -68,7 +68,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&api.Request{
-		Message:   fmt.Sprintf("/auth remove token %v from user %v", token, username),
+		Message:   fmt.Sprintf("/auth user %v remove token %v", username, token),
 		AuthToken: authToken,
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {
@@ -104,7 +104,7 @@ func TestHandleMessageFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 	responses, err := c.HandleMessage(&api.Request{
-		Message:   fmt.Sprintf("/auth remove token %v from user %v", token, username),
+		Message:   fmt.Sprintf("/auth user %v remove token %v", username, token),
 		AuthToken: authToken,
 	})
 	if err := AssertThat(counter, Is(1)); err != nil {

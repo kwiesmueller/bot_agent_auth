@@ -22,7 +22,7 @@ func New(
 	addTokenToUser addTokenToUser,
 ) *handler {
 	h := new(handler)
-	h.command = command.New(prefix.String(), "add", "token", "[TOKEN]", "from", "user", "[USERNAME]")
+	h.command = command.New(prefix.String(), "user", "[USERNAME]", "add", "token", "[TOKEN]")
 	h.addTokenToUser = addTokenToUser
 	return h
 }

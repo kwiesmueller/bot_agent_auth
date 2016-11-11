@@ -22,7 +22,7 @@ func New(
 	removeTokenToUser removeTokenToUser,
 ) *handler {
 	h := new(handler)
-	h.command = command.New(prefix.String(), "remove", "token", "[TOKEN]", "from", "user", "[USERNAME]")
+	h.command = command.New(prefix.String(), "user", "[USERNAME]", "remove", "token", "[TOKEN]")
 	h.removeTokenToUser = removeTokenToUser
 	return h
 }
