@@ -64,6 +64,10 @@ func (b *botAgentAuthfactory) UserService() service.UserService {
 	return b.authClient().UserService()
 }
 
+func (b *botAgentAuthfactory) AuthService() service.AuthService {
+	return b.authClient().AuthService()
+}
+
 func (b *botAgentAuthfactory) UserGroupService() service.UserGroupService {
 	return b.authClient().UserGroupService()
 }
@@ -146,7 +150,7 @@ func (b *botAgentAuthfactory) applicationExistsHandler() match.Handler {
 }
 
 func (b *botAgentAuthfactory) Whoami(authToken auth_model.AuthToken) (*auth_model.UserName, error) {
-	username, err := b.UserService().VerifyTokenHasGroups(authToken, nil)
+	username, err := b.AuthService().VerifyTokenHasGroups(authToken, nil)
 	if err != nil {
 		return nil, err
 	}
