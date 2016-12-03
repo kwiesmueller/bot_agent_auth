@@ -27,6 +27,10 @@ func New(
 	return h
 }
 
+func (h *handler) Allowed(request *api.Request) bool {
+	return true
+}
+
 func (h *handler) Match(request *api.Request) bool {
 	return h.command.MatchRequest(request)
 }

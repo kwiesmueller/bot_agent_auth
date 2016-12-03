@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestImplementsHandler(t *testing.T) {
-	c := New("", "", nil)
+	c := New("",  nil)
 	var i *h.Handler
 	if err := AssertThat(c, Implements(i)); err != nil {
 		t.Fatal(err)
@@ -30,7 +30,7 @@ func TestImplementsHandler(t *testing.T) {
 }
 
 func TestMatchTrue(t *testing.T) {
-	c := New("/auth", "", nil)
+	c := New("/auth",  nil)
 	match := c.Match(&api.Request{
 		Message: "/auth user delete tester",
 	})
@@ -40,7 +40,7 @@ func TestMatchTrue(t *testing.T) {
 }
 
 func TestMatchFalse(t *testing.T) {
-	c := New("/auth", "", nil)
+	c := New("/auth", nil)
 	match := c.Match(&api.Request{
 		Message: "/auth user delete",
 	})
@@ -52,7 +52,7 @@ func TestMatchFalse(t *testing.T) {
 func TestHandleMessageSuccess(t *testing.T) {
 	username := "tester"
 	counter := 0
-	c := New("/auth", "", func(_username auth_model.UserName) error {
+	c := New("/auth",  func(_username auth_model.UserName) error {
 		if err := AssertThat(_username.String(), Is(username)); err != nil {
 			t.Fatal(err)
 		}
@@ -83,7 +83,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 func TestHandleMessageFailure(t *testing.T) {
 	username := "tester"
 	counter := 0
-	c := New("/auth", "", func(_username auth_model.UserName) error {
+	c := New("/auth", func(_username auth_model.UserName) error {
 		if err := AssertThat(_username.String(), Is(username)); err != nil {
 			t.Fatal(err)
 		}

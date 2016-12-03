@@ -9,18 +9,22 @@ import (
 	"github.com/golang/glog"
 )
 
-type Unregister func(authToken auth_model.AuthToken) error
+type unregister func(authToken auth_model.AuthToken) error
 
 type handler struct {
 	command    command.Command
-	unregister Unregister
+	unregister unregister
 }
 
-func New(prefix model.Prefix, unregister Unregister) *handler {
+func New(prefix model.Prefix, unregister unregister) *handler {
 	h := new(handler)
 	h.command = command.New(prefix.String(), "unregister")
 	h.unregister = unregister
 	return h
+}
+
+func (h *handler) Allowed(request *api.Request) bool {
+	return true
 }
 
 func (h *handler) Match(request *api.Request) bool {

@@ -4,30 +4,34 @@ import (
 	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
-	"github.com/bborbe/bot_agent/matcher"
 	"github.com/bborbe/bot_agent/response"
 	"github.com/bborbe/bot_agent_auth/model"
 	"github.com/golang/glog"
 )
 
-type DeleteUser func(username auth_model.UserName) error
+type deleteUser func(username auth_model.UserName) error
 
 type handler struct {
-	command   command.Command
-	authToken auth_model.AuthToken
-	delete    DeleteUser
+	command command.Command
+	delete  deleteUser
 }
 
-func New(prefix model.Prefix, authToken auth_model.AuthToken, delete DeleteUser) *handler {
+func New(
+	prefix model.Prefix,
+	delete deleteUser,
+) *handler {
 	h := new(handler)
 	h.command = command.New(prefix.String(), "user", "delete", "[USERNAME]")
-	h.authToken = authToken
 	h.delete = delete
 	return h
 }
 
+func (h *handler) Allowed(request *api.Request) bool {
+	return true
+}
+
 func (h *handler) Match(request *api.Request) bool {
-	return h.command.MatchRequest(request) && matcher.MatchRequestAuthToken(h.authToken, request)
+	return h.command.MatchRequest(request)
 }
 
 func (h *handler) Help(request *api.Request) []string {

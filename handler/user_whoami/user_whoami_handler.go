@@ -11,18 +11,22 @@ import (
 	"github.com/golang/glog"
 )
 
-type Whoami func(authToken auth_model.AuthToken) (*auth_model.UserName, error)
+type whoami func(authToken auth_model.AuthToken) (*auth_model.UserName, error)
 
 type handler struct {
 	command command.Command
-	whoami  Whoami
+	whoami  whoami
 }
 
-func New(prefix model.Prefix, whoami Whoami) *handler {
+func New(prefix model.Prefix, whoami whoami) *handler {
 	h := new(handler)
 	h.command = command.New(prefix.String(), "whoami")
 	h.whoami = whoami
 	return h
+}
+
+func (h *handler) Allowed(request *api.Request) bool {
+	return true
 }
 
 func (h *handler) Match(request *api.Request) bool {

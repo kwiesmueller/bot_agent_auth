@@ -16,12 +16,13 @@ const (
 	parameterNsqLookupd              = "nsq-lookupd-address"
 	parameterNsqd                    = "nsqd-address"
 	parameterBotName                 = "bot-name"
-	parameterAdmin                   = "admin"
 	parameterAuthUrl                 = "auth-url"
 	parameterAuthApplicationName     = "auth-application-name"
 	parameterAuthApplicationPassword = "auth-application-password"
 	parameterRestrictToTokens        = "restrict-to-tokens"
 	parameterPrefix                  = "prefix"
+	parameterAdminTokens             = "admin-to-tokens"
+	parameterAdminGroups             = "admin-to-groups"
 )
 
 var (
@@ -31,9 +32,10 @@ var (
 	authUrlPtr                 = flag.String(parameterAuthUrl, "", "auth url")
 	authApplicationNamePtr     = flag.String(parameterAuthApplicationName, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(parameterAuthApplicationPassword, "", "auth application password")
-	adminAuthTokenPtr          = flag.String(parameterAdmin, "", "admin")
-	restrictToTokensPtr        = flag.String(parameterRestrictToTokens, "", "restrict to tokens")
 	prefixPtr                  = flag.String(parameterPrefix, "/auth", "prefix commands start with")
+	restrictToTokensPtr        = flag.String(parameterRestrictToTokens, "", "restrict to tokens")
+	adminAuthTokensPtr         = flag.String(parameterAdminTokens, "", "admin tokens")
+	adminAuthGroupsPtr         = flag.String(parameterAdminGroups, "", "admin groups")
 )
 
 func main() {
@@ -69,7 +71,8 @@ func createConfig() model.Config {
 		AuthUrl:                 auth_model.Url(*authUrlPtr),
 		AuthApplicationName:     auth_model.ApplicationName(*authApplicationNamePtr),
 		AuthApplicationPassword: auth_model.ApplicationPassword(*authApplicationPasswordPtr),
-		AdminAuthToken:          auth_model.AuthToken(*adminAuthTokenPtr),
 		RestrictToTokens:        auth_model.ParseTokens(*restrictToTokensPtr),
+		AdminAuthTokens:         auth_model.ParseTokens(*adminAuthTokensPtr),
+		AdminGroups:              auth_model.ParseGroupNames(*adminAuthGroupsPtr),
 	}
 }

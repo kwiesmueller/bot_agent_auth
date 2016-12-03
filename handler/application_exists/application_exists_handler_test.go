@@ -17,7 +17,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestImplementsHandler(t *testing.T) {
-	c := New("", "", nil)
+	c := New("", nil)
 	var i *h.Handler
 	if err := AssertThat(c, Implements(i)); err != nil {
 		t.Fatal(err)

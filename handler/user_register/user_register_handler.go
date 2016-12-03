@@ -9,18 +9,22 @@ import (
 	"github.com/golang/glog"
 )
 
-type Register func(userName auth_model.UserName, authToken auth_model.AuthToken) error
+type register func(userName auth_model.UserName, authToken auth_model.AuthToken) error
 
 type handler struct {
 	command  command.Command
-	register Register
+	register register
 }
 
-func New(prefix model.Prefix, register Register) *handler {
+func New(prefix model.Prefix, register register) *handler {
 	h := new(handler)
 	h.command = command.New(prefix.String(), "register", "[NAME]")
 	h.register = register
 	return h
+}
+
+func (h *handler) Allowed(request *api.Request) bool {
+	return true
 }
 
 func (h *handler) Match(request *api.Request) bool {

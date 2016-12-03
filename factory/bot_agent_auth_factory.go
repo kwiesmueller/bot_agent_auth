@@ -14,23 +14,22 @@ import (
 	"github.com/bborbe/http/header"
 	http_rest "github.com/bborbe/http/rest"
 	"github.com/nsqio/go-nsq"
-
 	"net/http"
-
 	"github.com/bborbe/auth/client"
+	"github.com/bborbe/bot_agent/message_handler/check_tokens_groups"
 	application_creator_handler "github.com/bborbe/bot_agent_auth/handler/application_creator"
 	application_deletor_handler "github.com/bborbe/bot_agent_auth/handler/application_deletor"
 	application_exists_handler "github.com/bborbe/bot_agent_auth/handler/application_exists"
 	token_add_handler "github.com/bborbe/bot_agent_auth/handler/token_add"
 	token_remove_handler "github.com/bborbe/bot_agent_auth/handler/token_remove"
-	user_group_add_handler "github.com/bborbe/bot_agent_auth/handler/user_group_add"
 	user_create_handler "github.com/bborbe/bot_agent_auth/handler/user_create"
 	user_delete_handler "github.com/bborbe/bot_agent_auth/handler/user_delete"
+	user_group_add_handler "github.com/bborbe/bot_agent_auth/handler/user_group_add"
+	user_group_remove_handler "github.com/bborbe/bot_agent_auth/handler/user_group_remove"
 	user_list_handler "github.com/bborbe/bot_agent_auth/handler/user_list"
 	user_list_groups_handler "github.com/bborbe/bot_agent_auth/handler/user_list_group"
 	user_list_tokens_handler "github.com/bborbe/bot_agent_auth/handler/user_list_token"
 	user_register_handler "github.com/bborbe/bot_agent_auth/handler/user_register"
-	user_group_remove_handler "github.com/bborbe/bot_agent_auth/handler/user_group_remove"
 	"github.com/bborbe/bot_agent_auth/handler/user_token_add"
 	"github.com/bborbe/bot_agent_auth/handler/user_token_remove"
 	user_unregister_handler "github.com/bborbe/bot_agent_auth/handler/user_unregister"
@@ -137,18 +136,6 @@ func (b *botAgentAuthfactory) createApplication(applicationName auth_model.Appli
 	return &app.ApplicationPassword, nil
 }
 
-func (b *botAgentAuthfactory) applicationCreatorHandler() match.Handler {
-	return application_creator_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.createApplication)
-}
-
-func (b *botAgentAuthfactory) applicationDeletorHandler() match.Handler {
-	return application_deletor_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.ApplicationService().DeleteApplication)
-}
-
-func (b *botAgentAuthfactory) applicationExistsHandler() match.Handler {
-	return application_exists_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.ApplicationService().ExistsApplication)
-}
-
 func (b *botAgentAuthfactory) Whoami(authToken auth_model.AuthToken) (*auth_model.UserName, error) {
 	username, err := b.AuthService().VerifyTokenHasGroups(authToken, nil)
 	if err != nil {
@@ -169,32 +156,12 @@ func (b *botAgentAuthfactory) userUnregisterHandler() match.Handler {
 	return user_unregister_handler.New(b.config.Prefix, b.UserService().DeleteUserWithToken)
 }
 
-func (b *botAgentAuthfactory) userCreateHandler() match.Handler {
-	return user_create_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.UserService().CreateUserWithToken)
-}
-
-func (b *botAgentAuthfactory) userDeleteHandler() match.Handler {
-	return user_delete_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.UserService().DeleteUser)
-}
-
 func (b *botAgentAuthfactory) tokenAddHandler() match.Handler {
 	return token_add_handler.New(b.config.Prefix, b.UserService().AddTokenToUserWithToken)
 }
 
 func (b *botAgentAuthfactory) tokenRemoveHandler() match.Handler {
 	return token_remove_handler.New(b.config.Prefix, b.UserService().RemoveTokenFromUserWithToken)
-}
-
-func (b *botAgentAuthfactory) userAddGroupHandler() match.Handler {
-	return user_group_add_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.UserGroupService().AddUserToGroup)
-}
-
-func (b *botAgentAuthfactory) userRemoveGroupHandler() match.Handler {
-	return user_group_remove_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.UserGroupService().RemoveUserFromGroup)
-}
-
-func (b *botAgentAuthfactory) userListHandler() match.Handler {
-	return user_list_handler.New(b.config.Prefix, b.config.AdminAuthToken, b.UserService().List)
 }
 
 func (b *botAgentAuthfactory) userListTokensHandler() match.Handler {
@@ -211,4 +178,40 @@ func (b *botAgentAuthfactory) userTokenAddHandler() match.Handler {
 
 func (b *botAgentAuthfactory) userTokenRemoveHandler() match.Handler {
 	return user_token_remove.New(b.config.Prefix, b.UserService().RemoveTokenFromUser)
+}
+
+func (b *botAgentAuthfactory) requrireAdminTokenOrGroup(handler match.Handler) match.Handler {
+	return check_tokens_groups.New(handler, b.AuthService().HasGroups, b.config.AdminAuthTokens, b.config.AdminGroups)
+}
+
+func (b *botAgentAuthfactory) userCreateHandler() match.Handler {
+	return b.requrireAdminTokenOrGroup(user_create_handler.New(b.config.Prefix, b.UserService().CreateUserWithToken))
+}
+
+func (b *botAgentAuthfactory) userDeleteHandler() match.Handler {
+	return b.requrireAdminTokenOrGroup(user_delete_handler.New(b.config.Prefix, b.UserService().DeleteUser))
+}
+
+func (b *botAgentAuthfactory) applicationCreatorHandler() match.Handler {
+	return b.requrireAdminTokenOrGroup(application_creator_handler.New(b.config.Prefix, b.createApplication))
+}
+
+func (b *botAgentAuthfactory) applicationDeletorHandler() match.Handler {
+	return b.requrireAdminTokenOrGroup(application_deletor_handler.New(b.config.Prefix, b.ApplicationService().DeleteApplication))
+}
+
+func (b *botAgentAuthfactory) applicationExistsHandler() match.Handler {
+	return b.requrireAdminTokenOrGroup(application_exists_handler.New(b.config.Prefix, b.ApplicationService().ExistsApplication))
+}
+
+func (b *botAgentAuthfactory) userAddGroupHandler() match.Handler {
+	return b.requrireAdminTokenOrGroup(user_group_add_handler.New(b.config.Prefix, b.UserGroupService().AddUserToGroup))
+}
+
+func (b *botAgentAuthfactory) userRemoveGroupHandler() match.Handler {
+	return b.requrireAdminTokenOrGroup(user_group_remove_handler.New(b.config.Prefix, b.UserGroupService().RemoveUserFromGroup))
+}
+
+func (b *botAgentAuthfactory) userListHandler() match.Handler {
+	return b.requrireAdminTokenOrGroup(user_list_handler.New(b.config.Prefix, b.UserService().List))
 }

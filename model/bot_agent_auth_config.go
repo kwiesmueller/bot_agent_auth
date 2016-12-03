@@ -15,8 +15,9 @@ type Config struct {
 	AuthUrl                 auth_model.Url
 	AuthApplicationName     auth_model.ApplicationName
 	AuthApplicationPassword auth_model.ApplicationPassword
-	AdminAuthToken          auth_model.AuthToken
 	RestrictToTokens        []auth_model.AuthToken
+	AdminAuthTokens         []auth_model.AuthToken
+	AdminGroups             []auth_model.GroupName
 }
 
 func (c *Config) Validate() error {
