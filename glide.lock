@@ -1,5 +1,5 @@
 hash: 81315606e6d8147c4502f62a9b5e73537f45b9f70d7155b935d6062f5e29a896
-updated: 2016-12-03T12:58:09.439058104+01:00
+updated: 2016-12-03T14:49:42.348448578+01:00
 imports:
 - name: github.com/bborbe/auth
   version: f2dc4c5dc422e4ec757d3f613045faed5d5044d4
@@ -14,7 +14,7 @@ imports:
   - service
   - v1
 - name: github.com/bborbe/bot_agent
-  version: cb8fca4e31fdf9e3cf3785f5925a695e89276ccd
+  version: ea8798265b6b7a54e5ddbc9bdc55a3e3acd4a2e2
   subpackages:
   - api
   - command
