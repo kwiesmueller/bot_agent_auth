@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestImplementsHandler(t *testing.T) {
-	c := New("",  nil)
+	c := New("", nil)
 	var i *h.Handler
 	if err := AssertThat(c, Implements(i)); err != nil {
 		t.Fatal(err)
@@ -53,7 +53,7 @@ func TestHandleMessageSuccess(t *testing.T) {
 	userName := "tester"
 	groupName := "admin"
 	counter := 0
-	c := New("/auth",  func(_userName auth_model.UserName, _groupName auth_model.GroupName) error {
+	c := New("/auth", func(_userName auth_model.UserName, _groupName auth_model.GroupName) error {
 		if err := AssertThat(_groupName.String(), Is(groupName)); err != nil {
 			t.Fatal(err)
 		}

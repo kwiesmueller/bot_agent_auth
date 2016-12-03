@@ -2,6 +2,7 @@ package user_group_add
 
 import (
 	"fmt"
+
 	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
@@ -18,8 +19,8 @@ type handler struct {
 }
 
 func New(
-prefix model.Prefix,
-addGroupToUser addGroupToUser,
+	prefix model.Prefix,
+	addGroupToUser addGroupToUser,
 ) *handler {
 	h := new(handler)
 	h.command = command.New(prefix.String(), "user", "[USERNAME]", "add", "group", "[GROUP]")

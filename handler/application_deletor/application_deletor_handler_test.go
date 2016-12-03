@@ -1,8 +1,9 @@
 package application_deletor
 
 import (
-	"testing"
 	"os"
+	"testing"
+
 	. "github.com/bborbe/assert"
 	h "github.com/bborbe/bot_agent/message_handler/match"
 	"github.com/golang/glog"

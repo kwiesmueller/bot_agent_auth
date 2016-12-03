@@ -2,6 +2,7 @@ package user_group_remove
 
 import (
 	"fmt"
+
 	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/bot_agent/api"
 	"github.com/bborbe/bot_agent/command"
@@ -18,8 +19,8 @@ type handler struct {
 }
 
 func New(
-prefix model.Prefix,
-removeGroupToUser removeGroupToUser,
+	prefix model.Prefix,
+	removeGroupToUser removeGroupToUser,
 ) *handler {
 	h := new(handler)
 	h.command = command.New(prefix.String(), "user", "[USERNAME]", "remove", "group", "[GROUP]")

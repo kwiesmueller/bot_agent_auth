@@ -18,8 +18,8 @@ type handler struct {
 }
 
 func New(
-prefix model.Prefix,
-create create,
+	prefix model.Prefix,
+	create create,
 ) *handler {
 	h := new(handler)
 	h.command = command.New(prefix.String(), "user", "create", "[USERNAME]", "[PASSWORD]")

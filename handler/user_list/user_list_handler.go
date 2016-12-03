@@ -17,8 +17,8 @@ type handler struct {
 }
 
 func New(
-prefix model.Prefix,
-list listUsers,
+	prefix model.Prefix,
+	list listUsers,
 ) *handler {
 	h := new(handler)
 	h.command = command.New(prefix.String(), "user", "list")

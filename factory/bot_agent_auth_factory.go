@@ -1,22 +1,18 @@
 package factory
 
 import (
+	"net/http"
+
+	"github.com/bborbe/auth/client"
 	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/auth/service"
 	"github.com/bborbe/bot_agent/api"
+	"github.com/bborbe/bot_agent/message_handler/check_tokens_groups"
 	"github.com/bborbe/bot_agent/message_handler/match"
 	"github.com/bborbe/bot_agent/message_handler/restrict_to_tokens"
 	"github.com/bborbe/bot_agent/request_consumer"
 	"github.com/bborbe/bot_agent/rest"
 	"github.com/bborbe/bot_agent/sender"
-	"github.com/bborbe/bot_agent_auth/model"
-	http_client_builder "github.com/bborbe/http/client_builder"
-	"github.com/bborbe/http/header"
-	http_rest "github.com/bborbe/http/rest"
-	"github.com/nsqio/go-nsq"
-	"net/http"
-	"github.com/bborbe/auth/client"
-	"github.com/bborbe/bot_agent/message_handler/check_tokens_groups"
 	application_creator_handler "github.com/bborbe/bot_agent_auth/handler/application_creator"
 	application_deletor_handler "github.com/bborbe/bot_agent_auth/handler/application_deletor"
 	application_exists_handler "github.com/bborbe/bot_agent_auth/handler/application_exists"
@@ -34,6 +30,11 @@ import (
 	"github.com/bborbe/bot_agent_auth/handler/user_token_remove"
 	user_unregister_handler "github.com/bborbe/bot_agent_auth/handler/user_unregister"
 	user_whoami_handler "github.com/bborbe/bot_agent_auth/handler/user_whoami"
+	"github.com/bborbe/bot_agent_auth/model"
+	http_client_builder "github.com/bborbe/http/client_builder"
+	"github.com/bborbe/http/header"
+	http_rest "github.com/bborbe/http/rest"
+	"github.com/nsqio/go-nsq"
 )
 
 type botAgentAuthfactory struct {
@@ -100,23 +101,25 @@ func (b *botAgentAuthfactory) RequestConsumer() request_consumer.RequestConsumer
 func (b *botAgentAuthfactory) MessageHandler() api.MessageHandler {
 	var messageHandler api.MessageHandler = match.New(
 		b.config.Prefix.String(),
-		b.applicationCreatorHandler(),
-		b.applicationDeletorHandler(),
-		b.applicationExistsHandler(),
+		// normal user
 		b.userWhoamiHandler(),
 		b.userRegisterHandler(),
 		b.userUnregisterHandler(),
-		b.userCreateHandler(),
-		b.userDeleteHandler(),
 		b.tokenAddHandler(),
 		b.tokenRemoveHandler(),
-		b.userAddGroupHandler(),
-		b.userRemoveGroupHandler(),
-		b.userListHandler(),
-		b.userListTokensHandler(),
-		b.userListGroupsHandler(),
-		b.userTokenAddHandler(),
-		b.userTokenRemoveHandler(),
+		// admin user
+		b.requrireAdminTokenOrGroup(b.userListTokensHandler()),
+		b.requrireAdminTokenOrGroup(b.userListGroupsHandler()),
+		b.requrireAdminTokenOrGroup(b.userTokenAddHandler()),
+		b.requrireAdminTokenOrGroup(b.userTokenRemoveHandler()),
+		b.requrireAdminTokenOrGroup(b.userCreateHandler()),
+		b.requrireAdminTokenOrGroup(b.userDeleteHandler()),
+		b.requrireAdminTokenOrGroup(b.userAddGroupHandler()),
+		b.requrireAdminTokenOrGroup(b.userRemoveGroupHandler()),
+		b.requrireAdminTokenOrGroup(b.userListHandler()),
+		b.requrireAdminTokenOrGroup(b.applicationCreatorHandler()),
+		b.requrireAdminTokenOrGroup(b.applicationDeletorHandler()),
+		b.requrireAdminTokenOrGroup(b.applicationExistsHandler()),
 	)
 
 	if len(b.config.RestrictToTokens) > 0 {
@@ -142,6 +145,10 @@ func (b *botAgentAuthfactory) Whoami(authToken auth_model.AuthToken) (*auth_mode
 		return nil, err
 	}
 	return username, nil
+}
+
+func (b *botAgentAuthfactory) requrireAdminTokenOrGroup(handler match.Handler) match.Handler {
+	return check_tokens_groups.New(handler, b.AuthService().HasGroups, b.config.AdminAuthTokens, b.config.AdminGroups)
 }
 
 func (b *botAgentAuthfactory) userWhoamiHandler() match.Handler {
@@ -180,38 +187,34 @@ func (b *botAgentAuthfactory) userTokenRemoveHandler() match.Handler {
 	return user_token_remove.New(b.config.Prefix, b.UserService().RemoveTokenFromUser)
 }
 
-func (b *botAgentAuthfactory) requrireAdminTokenOrGroup(handler match.Handler) match.Handler {
-	return check_tokens_groups.New(handler, b.AuthService().HasGroups, b.config.AdminAuthTokens, b.config.AdminGroups)
-}
-
 func (b *botAgentAuthfactory) userCreateHandler() match.Handler {
-	return b.requrireAdminTokenOrGroup(user_create_handler.New(b.config.Prefix, b.UserService().CreateUserWithToken))
+	return user_create_handler.New(b.config.Prefix, b.UserService().CreateUserWithToken)
 }
 
 func (b *botAgentAuthfactory) userDeleteHandler() match.Handler {
-	return b.requrireAdminTokenOrGroup(user_delete_handler.New(b.config.Prefix, b.UserService().DeleteUser))
+	return user_delete_handler.New(b.config.Prefix, b.UserService().DeleteUser)
 }
 
 func (b *botAgentAuthfactory) applicationCreatorHandler() match.Handler {
-	return b.requrireAdminTokenOrGroup(application_creator_handler.New(b.config.Prefix, b.createApplication))
+	return application_creator_handler.New(b.config.Prefix, b.createApplication)
 }
 
 func (b *botAgentAuthfactory) applicationDeletorHandler() match.Handler {
-	return b.requrireAdminTokenOrGroup(application_deletor_handler.New(b.config.Prefix, b.ApplicationService().DeleteApplication))
+	return application_deletor_handler.New(b.config.Prefix, b.ApplicationService().DeleteApplication)
 }
 
 func (b *botAgentAuthfactory) applicationExistsHandler() match.Handler {
-	return b.requrireAdminTokenOrGroup(application_exists_handler.New(b.config.Prefix, b.ApplicationService().ExistsApplication))
+	return application_exists_handler.New(b.config.Prefix, b.ApplicationService().ExistsApplication)
 }
 
 func (b *botAgentAuthfactory) userAddGroupHandler() match.Handler {
-	return b.requrireAdminTokenOrGroup(user_group_add_handler.New(b.config.Prefix, b.UserGroupService().AddUserToGroup))
+	return user_group_add_handler.New(b.config.Prefix, b.UserGroupService().AddUserToGroup)
 }
 
 func (b *botAgentAuthfactory) userRemoveGroupHandler() match.Handler {
-	return b.requrireAdminTokenOrGroup(user_group_remove_handler.New(b.config.Prefix, b.UserGroupService().RemoveUserFromGroup))
+	return user_group_remove_handler.New(b.config.Prefix, b.UserGroupService().RemoveUserFromGroup)
 }
 
 func (b *botAgentAuthfactory) userListHandler() match.Handler {
-	return b.requrireAdminTokenOrGroup(user_list_handler.New(b.config.Prefix, b.UserService().List))
+	return user_list_handler.New(b.config.Prefix, b.UserService().List)
 }
