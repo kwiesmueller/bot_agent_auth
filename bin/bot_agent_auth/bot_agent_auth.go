@@ -21,8 +21,8 @@ const (
 	parameterAuthApplicationPassword = "auth-application-password"
 	parameterRestrictToTokens        = "restrict-to-tokens"
 	parameterPrefix                  = "prefix"
-	parameterAdminTokens             = "admin-to-tokens"
-	parameterAdminGroups             = "admin-to-groups"
+	parameterAdminTokens             = "admin-tokens"
+	parameterAdminGroups             = "admin-groups"
 )
 
 var (
@@ -73,6 +73,6 @@ func createConfig() model.Config {
 		AuthApplicationPassword: auth_model.ApplicationPassword(*authApplicationPasswordPtr),
 		RestrictToTokens:        auth_model.ParseTokens(*restrictToTokensPtr),
 		AdminAuthTokens:         auth_model.ParseTokens(*adminAuthTokensPtr),
-		AdminGroups:              auth_model.ParseGroupNames(*adminAuthGroupsPtr),
+		AdminGroups:             auth_model.ParseGroupNames(*adminAuthGroupsPtr),
 	}
 }
