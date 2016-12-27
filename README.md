@@ -6,7 +6,7 @@
 
 ## Continuous integration
 
-[Jenkins](https://www.benjamin-borbe.de/jenkins/job/Go-Bot-Agent-Auth/)
+[Jenkins](https://jenkins.benjamin-borbe.de/job/Go-Bot-Agent-Auth/)
 
 ## Copyright and license
 
